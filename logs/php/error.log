@@ -1,0 +1,174 @@
+[08-Dec-2025 13:54:35 UTC] PHP Fatal error:  Uncaught Error: Class "BC\Loader" not found in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\booking-calendar\booking-calendar.php:52
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): bc_activate(false)
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\includes\plugin.php(703): do_action('activate_bookin...', false)
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\plugins.php(60): activate_plugin('booking-calenda...', 'http://calendar...', false)
+#5 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\booking-calendar\booking-calendar.php on line 52
+[08-Dec-2025 14:15:12 UTC] PHP Fatal error:  Uncaught Error: Class "MBC\Loader" not found in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php:50
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): mbc_activate(false)
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\includes\plugin.php(703): do_action('activate_mpeti-...', false)
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\plugins.php(60): activate_plugin('mpeti-booking-c...', 'http://calendar...', false)
+#5 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php on line 50
+[08-Dec-2025 14:15:26 UTC] PHP Fatal error:  Uncaught Error: Class "MBC\Loader" not found in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php:50
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): mbc_activate(false)
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\includes\plugin.php(703): do_action('activate_mpeti-...', false)
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\plugins.php(60): activate_plugin('mpeti-booking-c...', 'http://calendar...', false)
+#5 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php on line 50
+[08-Dec-2025 14:15:39 UTC] PHP Fatal error:  Uncaught Error: Class "MBC\Loader" not found in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php:50
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): mbc_activate(false)
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\includes\plugin.php(703): do_action('activate_mpeti-...', false)
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\plugins.php(60): activate_plugin('mpeti-booking-c...', 'http://calendar...', false)
+#5 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php on line 50
+[08-Dec-2025 14:15:43 UTC] PHP Fatal error:  Uncaught Error: Class "MBC\Loader" not found in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php:50
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): mbc_activate(false)
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters('', Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\includes\plugin.php(703): do_action('activate_mpeti-...', false)
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\plugins.php(60): activate_plugin('mpeti-booking-c...', 'http://calendar...', false)
+#5 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\mpeti-booking-calendar.php on line 50
+[08-Dec-2025 14:24:03 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function MBC\add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\admin-ajax.php(22): require_once('C:\\Users\\mpeti\\...')
+#7 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 14:24:03 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function MBC\add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\admin.php(35): require_once('C:\\Users\\mpeti\\...')
+#7 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\plugins.php(10): require_once('C:\\Users\\mpeti\\...')
+#8 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:11:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function MBC\add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-cron.php(46): require_once('C:\\Users\\mpeti\\...')
+#7 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:11:08 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function MBC\add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\admin.php(35): require_once('C:\\Users\\mpeti\\...')
+#7 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\user\admin.php(12): require_once('C:\\Users\\mpeti\\...')
+#8 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\user\index.php(11): require_once('C:\\Users\\mpeti\\...')
+#9 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:11:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function MBC\add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\admin.php(35): require_once('C:\\Users\\mpeti\\...')
+#7 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\user\admin.php(12): require_once('C:\\Users\\mpeti\\...')
+#8 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\user\index.php(11): require_once('C:\\Users\\mpeti\\...')
+#9 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:13:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-cron.php(46): require_once('C:\\Users\\mpeti\\...')
+#7 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:13:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-cron.php(46): require_once('C:\\Users\\mpeti\\...')
+#7 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:14:13 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-cron.php(46): require_once('C:\\Users\\mpeti\\...')
+#7 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:17:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\admin.php(35): require_once('C:\\Users\\mpeti\\...')
+#7 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\user\admin.php(12): require_once('C:\\Users\\mpeti\\...')
+#8 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-admin\user\index.php(11): require_once('C:\\Users\\mpeti\\...')
+#9 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:17:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-cron.php(46): require_once('C:\\Users\\mpeti\\...')
+#7 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[08-Dec-2025 17:17:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php:46
+Stack trace:
+#0 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(341): MBC\CPT_Appointment->register_meta_boxes('')
+#1 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\class-wp-hook.php(365): WP_Hook->apply_filters(NULL, Array)
+#2 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-includes\plugin.php(522): WP_Hook->do_action(Array)
+#3 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-settings.php(742): do_action('init')
+#4 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-config.php(103): require_once('C:\\Users\\mpeti\\...')
+#5 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-load.php(50): require_once('C:\\Users\\mpeti\\...')
+#6 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-blog-header.php(13): require_once('C:\\Users\\mpeti\\...')
+#7 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\index.php(17): require('C:\\Users\\mpeti\\...')
+#8 {main}
+  thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46

@@ -1,0 +1,63 @@
+.mbc-admin-calendar-app {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	grid-gap: 16px;
+}
+.mbc-admin-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 12px;
+}
+.mbc-admin-day {
+	background: #fff;
+	border: 2px solid #ddd;
+	padding: 12px;
+	cursor: pointer;
+}
+.mbc-admin-day:hover {
+	border-color: #0073aa;
+}
+.mbc-admin-sidebar {
+	background: #fff;
+	border: 1px solid #ddd;
+	padding: 12px;
+}
+.mbc-admin-appointment {
+	border-bottom: 1px solid #eee;
+	padding: 8px 0;
+}
+.mbc-admin-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+#mbc-timeslots-manager {
+	margin-top: 20px;
+}
+
+#mbc-timeslots-manager table {
+	margin-top: 16px;
+}
+
+#mbc-timeslots-manager .mbc-status-active {
+	color: #46b450;
+	font-weight: 600;
+}
+
+#mbc-timeslots-manager .mbc-status-inactive {
+	color: #dc3232;
+	font-weight: 600;
+}
+
+#mbc-timeslots-manager .mbc-edit-slot,
+#mbc-timeslots-manager .mbc-delete-slot {
+	margin-right: 4px;
+}
+
+#mbc-timeslots-manager h3 {
+	margin-top: 24px;
+	margin-bottom: 12px;
+}
+

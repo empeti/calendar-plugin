@@ -39,9 +39,44 @@ class Timeslots {
 		$weekday = (int) \gmdate( 'w', \strtotime( $date ) );
 		$table   = $this->table();
 
+		// If service_id is provided, filter to only staff members assigned to this service
+		$staff_ids_for_service = array();
+		if ( $service_id ) {
+			$all_staff = \get_posts( array(
+				'post_type'      => 'mbc_staff',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'fields'         => 'ids',
+			) );
+
+			foreach ( $all_staff as $staff_post_id ) {
+				$staff_services = \get_post_meta( $staff_post_id, 'staff_services', true );
+				if ( ! \is_array( $staff_services ) ) {
+					$staff_services = array();
+				}
+				$staff_services = \array_map( 'intval', $staff_services );
+				
+				// Check if this staff member is assigned to the service
+				if ( \in_array( (int) $service_id, $staff_services, true ) ) {
+					$staff_ids_for_service[] = (int) $staff_post_id;
+				}
+			}
+
+			// If no staff members are assigned to this service, return empty array
+			if ( empty( $staff_ids_for_service ) ) {
+				return array();
+			}
+		}
+
 		$where = $wpdb->prepare( 'WHERE weekday = %d AND is_active = 1', $weekday );
+		
+		// If staff_id is provided, filter by that specific staff
 		if ( $staff_id ) {
 			$where .= $wpdb->prepare( ' AND (staff_id = %d OR staff_id = 0)', $staff_id );
+		} elseif ( $service_id && ! empty( $staff_ids_for_service ) ) {
+			// If service_id is provided but no specific staff, only check timeslots for staff assigned to the service
+			$staff_ids_placeholders = \implode( ',', \array_fill( 0, \count( $staff_ids_for_service ), '%d' ) );
+			$where .= $wpdb->prepare( " AND (staff_id IN ({$staff_ids_placeholders}) OR staff_id = 0)", ...$staff_ids_for_service );
 		}
 
 		$rules = $wpdb->get_results( "SELECT * FROM {$table} {$where}", ARRAY_A );
@@ -50,15 +85,47 @@ class Timeslots {
 		$slots    = array();
 
 		foreach ( $rules as $rule ) {
-			$start = \strtotime( "{$date} {$rule['start_time']}" );
-			$end   = \strtotime( "{$date} {$rule['end_time']}" );
-			for ( $time = $start; $time < $end; $time += $duration * MINUTE_IN_SECONDS ) {
-				$time_str  = \gmdate( 'H:i', $time );
-				$available = $this->is_slot_available( $date, $time_str, $staff_id ?? (int) $rule['staff_id'], $service_id );
-				$slots[]   = array(
-					'time'      => $time_str,
-					'available' => $available,
-				);
+			$rule_staff_id = (int) $rule['staff_id'];
+			
+			// If this is a general timeslot (staff_id = 0), we need to check if any staff assigned to the service can use it
+			if ( $rule_staff_id === 0 && $service_id && ! empty( $staff_ids_for_service ) ) {
+				// For general timeslots, check availability for each staff member assigned to the service
+				foreach ( $staff_ids_for_service as $service_staff_id ) {
+					// Skip if a specific staff_id was requested and this isn't it
+					if ( $staff_id && $service_staff_id !== $staff_id ) {
+						continue;
+					}
+					
+					$start = \strtotime( "{$date} {$rule['start_time']}" );
+					$end   = \strtotime( "{$date} {$rule['end_time']}" );
+					for ( $time = $start; $time < $end; $time += $duration * MINUTE_IN_SECONDS ) {
+						$time_str  = \gmdate( 'H:i', $time );
+						$available = $this->is_slot_available( $date, $time_str, $service_staff_id, $service_id );
+						$slots[]   = array(
+							'time'      => $time_str,
+							'available' => $available,
+						);
+					}
+				}
+			} else {
+				// For specific staff timeslots, use the staff_id from the rule or the provided staff_id
+				$slot_staff_id = $staff_id ?? $rule_staff_id;
+				
+				// Skip if service_id is provided and this staff is not assigned to the service
+				if ( $service_id && $slot_staff_id > 0 && ! \in_array( $slot_staff_id, $staff_ids_for_service, true ) ) {
+					continue;
+				}
+				
+				$start = \strtotime( "{$date} {$rule['start_time']}" );
+				$end   = \strtotime( "{$date} {$rule['end_time']}" );
+				for ( $time = $start; $time < $end; $time += $duration * MINUTE_IN_SECONDS ) {
+					$time_str  = \gmdate( 'H:i', $time );
+					$available = $this->is_slot_available( $date, $time_str, $slot_staff_id, $service_id );
+					$slots[]   = array(
+						'time'      => $time_str,
+						'available' => $available,
+					);
+				}
 			}
 		}
 

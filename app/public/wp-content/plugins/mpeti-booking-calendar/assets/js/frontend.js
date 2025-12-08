@@ -99,18 +99,33 @@
 					// Set selected service
 					selectedService = serviceId;
 					
+					// Reset other selections first
+					resetSelections();
+					
 					// Enable calendar
 					if (calendarEl) {
 						calendarEl.classList.remove('mbc-disabled');
-						// Clear cache and update availability
+						
+						// Clear ALL availability classes from calendar before updating
+						const grid = calendarEl.querySelector('.mbc-calendar-grid');
+						if (grid) {
+							grid.querySelectorAll('.mbc-calendar-day').forEach(dayEl => {
+								dayEl.classList.remove('is-available-day', 'mbc-has-slots', 'no-slots-available', 'mbc-no-slots');
+								dayEl.removeAttribute('role');
+								dayEl.removeAttribute('tabindex');
+								dayEl.removeAttribute('data-handler-attached');
+							});
+						}
+						
+						// Clear ALL cache entries (not just current service) to prevent showing wrong availability
 						Object.keys(availabilityCache).forEach(key => delete availabilityCache[key]);
+						
+						// Update availability immediately and after a short delay to ensure calendar is ready
+						updateCalendarAvailability();
 						setTimeout(() => {
 							updateCalendarAvailability();
-						}, 100);
+						}, 200);
 					}
-					
-					// Reset other selections
-					resetSelections();
 				});
 			});
 		}
@@ -131,23 +146,60 @@
 						});
 					}
 					
+					// Reset other selections first
+					resetSelections();
+					
 					// Enable calendar
 					if (calendarEl) {
 						calendarEl.classList.remove('mbc-disabled');
-						// Clear cache and update availability
+						
+						// Clear ALL availability classes from calendar before updating
+						const grid = calendarEl.querySelector('.mbc-calendar-grid');
+						if (grid) {
+							grid.querySelectorAll('.mbc-calendar-day').forEach(dayEl => {
+								dayEl.classList.remove('is-available-day', 'mbc-has-slots', 'no-slots-available', 'mbc-no-slots');
+								dayEl.removeAttribute('role');
+								dayEl.removeAttribute('tabindex');
+								dayEl.removeAttribute('data-handler-attached');
+							});
+						}
+						
+						// Clear ALL cache entries (not just current service) to prevent showing wrong availability
 						Object.keys(availabilityCache).forEach(key => delete availabilityCache[key]);
+						
+						// Update availability immediately and after a short delay to ensure calendar is ready
+						updateCalendarAvailability();
 						setTimeout(() => {
 							updateCalendarAvailability();
-						}, 100);
+						}, 200);
 					}
+				} else {
 					// Reset other selections
 					resetSelections();
-				} else {
 					// Disable calendar
 					if (calendarEl) {
 						calendarEl.classList.add('mbc-disabled');
+						// Mark all days as not available
+						const grid = calendarEl.querySelector('.mbc-calendar-grid');
+						if (grid) {
+							const today = new Date();
+							today.setHours(0, 0, 0, 0);
+							grid.querySelectorAll('.mbc-calendar-day:not(.mbc-past):not(.mbc-other-month)').forEach(dayEl => {
+								const dateStr = dayEl.dataset.date;
+								if (dateStr) {
+									// Parse date string as local date (YYYY-MM-DD)
+									const [year, month, day] = dateStr.split('-').map(Number);
+									const dateObj = new Date(year, month - 1, day);
+									dateObj.setHours(0, 0, 0, 0);
+									if (dateObj >= today) {
+										dayEl.classList.add('no-slots-available', 'mbc-no-slots');
+										dayEl.classList.remove('is-available-day', 'mbc-has-slots');
+										dayEl.style.cursor = 'not-allowed';
+									}
+								}
+							});
+						}
 					}
-					resetSelections();
 				}
 			});
 		}
@@ -488,8 +540,10 @@
 	function checkAvailabilityForDate(date) {
 		if (!selectedService) return Promise.resolve(false);
 		
-		if (availabilityCache[date] !== undefined) {
-			return Promise.resolve(availabilityCache[date]);
+		// Cache key includes service ID to ensure service-specific caching
+		const cacheKey = `${selectedService}_${date}`;
+		if (availabilityCache[cacheKey] !== undefined) {
+			return Promise.resolve(availabilityCache[cacheKey]);
 		}
 
 		return apiFetch({
@@ -499,14 +553,14 @@
 		.then((res) => {
 			if (res && res.slots && Array.isArray(res.slots)) {
 				const hasAvailable = res.slots.some(slot => slot.available === true);
-				availabilityCache[date] = hasAvailable;
+				availabilityCache[cacheKey] = hasAvailable;
 				return hasAvailable;
 			}
-			availabilityCache[date] = false;
+			availabilityCache[cacheKey] = false;
 			return false;
 		})
 		.catch(() => {
-			availabilityCache[date] = false;
+			availabilityCache[cacheKey] = false;
 			return false;
 		});
 	}
@@ -553,7 +607,15 @@
 		});
 
 		const checkPromises = datesToCheck.map(date => {
+			// Capture current selectedService to ensure we use the correct service even if it changes during async operations
+			const serviceToCheck = selectedService;
+			
 			return checkAvailabilityForDate(date).then(hasAvailable => {
+				// Double-check that the service hasn't changed while we were checking
+				if (serviceToCheck !== selectedService) {
+					return; // Skip updating if service changed
+				}
+				
 				const dayEl = grid.querySelector(`[data-date="${date}"]`);
 				if (dayEl) {
 					// Remove any inline cursor styles
@@ -664,7 +726,17 @@
 		}
 
 		// Clear availability cache when month changes to prevent stale data
-		Object.keys(availabilityCache).forEach(key => delete availabilityCache[key]);
+		// Only clear cache entries for the current selected service
+		if (selectedService) {
+			Object.keys(availabilityCache).forEach(key => {
+				if (key.startsWith(`${selectedService}_`)) {
+					delete availabilityCache[key];
+				}
+			});
+		} else {
+			// If no service selected, clear all cache
+			Object.keys(availabilityCache).forEach(key => delete availabilityCache[key]);
+		}
 
 		if (selectedService) {
 			setTimeout(() => {

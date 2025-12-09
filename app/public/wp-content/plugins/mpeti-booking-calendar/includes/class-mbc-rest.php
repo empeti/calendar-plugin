@@ -96,6 +96,30 @@ class Rest {
 				),
 			)
 		);
+
+		\register_rest_route(
+			'mpeti-booking-calendar/v1',
+			'/staff',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_all_staff' ),
+				'permission_callback' => function() {
+					return \current_user_can( 'manage_options' );
+				},
+			)
+		);
+
+		\register_rest_route(
+			'mpeti-booking-calendar/v1',
+			'/services',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_all_services' ),
+				'permission_callback' => function() {
+					return \current_user_can( 'manage_options' );
+				},
+			)
+		);
 	}
 
 	public function validate_date( $value ): bool {
@@ -317,17 +341,77 @@ class Rest {
 		$query = new \WP_Query( $args );
 		$data  = array();
 
-		foreach ( $query->posts as $post_id ) {
+		foreach ( $query->posts as $post ) {
+			$post_id = $post->ID;
+			$staff_id = \get_post_meta( $post_id, 'staff_id', true );
+			$service_id = \get_post_meta( $post_id, 'service_id', true );
+			
+			$staff_name = '';
+			if ( $staff_id ) {
+				$staff_post = \get_post( $staff_id );
+				$staff_name = $staff_post ? $staff_post->post_title : '';
+			}
+			
+			$service_name = '';
+			if ( $service_id ) {
+				$service_post = \get_post( $service_id );
+				$service_name = $service_post ? $service_post->post_title : '';
+			}
+			
 			$data[] = array(
 				'id'       => $post_id,
 				'date'     => \get_post_meta( $post_id, 'appointment_date', true ),
 				'time'     => \get_post_meta( $post_id, 'appointment_time', true ),
 				'customer' => \get_post_meta( $post_id, 'customer_name', true ),
-				'status'   => \get_post_meta( $post_id, 'appointment_status', true ),
-				'staff'    => \get_post_meta( $post_id, 'staff_id', true ),
-				'service'  => \get_post_meta( $post_id, 'service_id', true ),
-				'staff_color'   => \get_post_meta( \get_post_meta( $post_id, 'staff_id', true ), 'staff_color', true ),
-				'service_color' => \get_post_meta( \get_post_meta( $post_id, 'service_id', true ), 'service_color', true ),
+				'customer_email' => \get_post_meta( $post_id, 'customer_email', true ),
+				'customer_phone' => \get_post_meta( $post_id, 'customer_phone', true ),
+				'status'   => \get_post_meta( $post_id, 'appointment_status', true ) ?: 'pending',
+				'staff'    => $staff_id,
+				'staff_name' => $staff_name,
+				'service'  => $service_id,
+				'service_name' => $service_name,
+				'staff_color'   => $staff_id ? \get_post_meta( $staff_id, 'staff_color', true ) : '',
+				'service_color' => $service_id ? \get_post_meta( $service_id, 'service_color', true ) : '',
+			);
+		}
+
+		return new WP_REST_Response( $data );
+	}
+
+	public function get_all_staff( WP_REST_Request $request ) {
+		$staff = \get_posts( array(
+			'post_type'      => 'mbc_staff',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+		) );
+
+		$data = array();
+		foreach ( $staff as $staff_member ) {
+			$data[] = array(
+				'id'   => $staff_member->ID,
+				'name' => $staff_member->post_title,
+			);
+		}
+
+		return new WP_REST_Response( $data );
+	}
+
+	public function get_all_services( WP_REST_Request $request ) {
+		$services = \get_posts( array(
+			'post_type'      => 'mbc_service',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+		) );
+
+		$data = array();
+		foreach ( $services as $service ) {
+			$data[] = array(
+				'id'   => $service->ID,
+				'name' => $service->post_title,
 			);
 		}
 

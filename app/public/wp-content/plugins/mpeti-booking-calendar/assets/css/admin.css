@@ -1,36 +1,207 @@
-.mbc-admin-calendar-app {
-	display: grid;
-	grid-template-columns: 2fr 1fr;
-	grid-gap: 16px;
+.mbc-admin-appointments-list-view {
+	padding: 10px 0;
 }
-.mbc-admin-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-gap: 12px;
-}
-.mbc-admin-day {
-	background: #fff;
-	border: 2px solid #ddd;
+
+.mbc-admin-filters {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 16px;
 	padding: 12px;
-	cursor: pointer;
-}
-.mbc-admin-day:hover {
-	border-color: #0073aa;
-}
-.mbc-admin-sidebar {
 	background: #fff;
 	border: 1px solid #ddd;
-	padding: 12px;
+	border-radius: 4px;
 }
-.mbc-admin-appointment {
-	border-bottom: 1px solid #eee;
-	padding: 8px 0;
+
+.mbc-admin-filters .components-base-control {
+	flex: 1;
+	min-width: 150px;
 }
-.mbc-admin-toolbar {
+
+.mbc-admin-appointments-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.mbc-admin-staff-group {
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.mbc-admin-staff-header {
+	margin: 0;
+	padding: 10px 16px;
+	background: #f8f9fa;
+	border-left: 4px solid #4caf50;
+	font-size: 1.15em;
+	font-weight: 600;
+	color: #333;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.mbc-admin-date-group {
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.mbc-admin-date-group:last-child {
+	border-bottom: none;
+}
+
+.mbc-admin-date-header {
+	margin: 0;
+	padding: 8px 16px;
+	background: #fafafa;
+	font-size: 1em;
+	font-weight: 600;
+	color: #555;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.mbc-admin-appointments-list {
+	padding: 8px 16px;
+}
+
+.mbc-admin-appointment-item {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	padding: 8px 12px;
+	margin-bottom: 6px;
+	background: #f9f9f9;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	transition: all 0.2s;
+}
+
+.mbc-admin-appointment-item:hover {
+	background: #f0f0f0;
+	border-color: #ccc;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mbc-admin-appointment-item:last-child {
+	margin-bottom: 0;
+}
+
+.mbc-admin-appointment-time-status {
+	flex-shrink: 0;
+	min-width: 140px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: flex-start;
+}
+
+.mbc-admin-appointment-time {
+	font-size: 0.95em;
+	font-weight: 600;
+	color: #333;
+}
+
+.mbc-admin-appointment-status {
+	display: inline-block;
+}
+
+.mbc-admin-appointment-status span {
+	display: inline-block;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 0.75em;
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+.mbc-admin-appointment-details {
+	flex: 1;
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	margin-bottom: 10px;
+}
+
+.mbc-admin-appointment-main {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
+.mbc-admin-appointment-customer {
+	font-size: 0.95em;
+	font-weight: 600;
+	color: #222;
+	padding-right: 8px;
+}
+
+.mbc-admin-appointment-service {
+	font-size: 0.85em;
+	color: #666;
+	font-style: italic;
+	padding-right: 8px;
+}
+
+.mbc-admin-appointment-email,
+.mbc-admin-appointment-phone {
+	font-size: 0.8em;
+	color: #777;
+	padding-right: 8px;
+}
+
+.mbc-status-pending {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.mbc-status-confirmed {
+	background: #d4edda;
+	color: #155724;
+}
+
+.mbc-status-cancelled {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.mbc-admin-appointment-email,
+.mbc-admin-appointment-phone {
+	font-size: 0.8em;
+	color: #777;
+}
+
+.mbc-admin-appointment-edit {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 10px;
+	background: #0073aa;
+	color: #fff;
+	text-decoration: none;
+	border-radius: 3px;
+	font-size: 0.9em;
+	line-height: 1.2;
+	transition: background 0.2s;
+	margin-left: auto;
+	white-space: nowrap;
+}
+
+.mbc-admin-appointment-edit:hover {
+	background: #005a87;
+	color: #fff;
+}
+
+.mbc-edit-icon {
+	font-size: 1em;
+}
+
+.mbc-admin-no-appointments {
+	padding: 30px;
+	text-align: center;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	color: #666;
+	font-size: 1em;
 }
 
 #mbc-timeslots-manager {
@@ -60,4 +231,3 @@
 	margin-top: 24px;
 	margin-bottom: 12px;
 }
-

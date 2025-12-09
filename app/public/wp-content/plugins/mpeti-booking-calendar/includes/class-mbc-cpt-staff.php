@@ -41,6 +41,15 @@ class CPT_Staff {
 			'normal',
 			'high'
 		);
+		
+		\add_meta_box(
+			'mbc_staff_timeslots',
+			\__( 'Time Slots', 'mpeti-booking-calendar' ),
+			array( $this, 'render_timeslots_meta_box' ),
+			'mbc_staff',
+			'normal',
+			'default'
+		);
 	}
 
 	public function enqueue_media_uploader( $hook ): void {
@@ -58,6 +67,17 @@ class CPT_Staff {
 			array( 'jquery' ),
 			'1.0.0',
 			true
+		);
+		
+		// Enqueue timeslots management script
+		\wp_enqueue_script( 'jquery' );
+		\wp_localize_script(
+			'jquery',
+			'mbcTimeslots',
+			array(
+				'nonce' => \wp_create_nonce( 'mbc_timeslot_nonce' ),
+				'ajaxUrl' => \admin_url( 'admin-ajax.php' ),
+			)
 		);
 	}
 
@@ -236,6 +256,156 @@ class CPT_Staff {
 				echo '—';
 			}
 		}
+	}
+
+	public function render_timeslots_meta_box( $post ): void {
+		global $wpdb;
+		$table = $wpdb->prefix . 'mbc_timeslots';
+		$staff_id = $post->ID;
+		
+		// Get timeslots for this staff member only
+		$timeslots = $wpdb->get_results( 
+			$wpdb->prepare( 
+				"SELECT * FROM {$table} WHERE staff_id = %d ORDER BY weekday, start_time", 
+				$staff_id 
+			), 
+			ARRAY_A 
+		);
+		
+		$weekdays = array(
+			0 => \__( 'Sunday', 'mpeti-booking-calendar' ),
+			1 => \__( 'Monday', 'mpeti-booking-calendar' ),
+			2 => \__( 'Tuesday', 'mpeti-booking-calendar' ),
+			3 => \__( 'Wednesday', 'mpeti-booking-calendar' ),
+			4 => \__( 'Thursday', 'mpeti-booking-calendar' ),
+			5 => \__( 'Friday', 'mpeti-booking-calendar' ),
+			6 => \__( 'Saturday', 'mpeti-booking-calendar' ),
+		);
+		?>
+		<p class="description"><?php \esc_html_e( 'Manage time slots for this staff member. Set up availability for each day of the week.', 'mpeti-booking-calendar' ); ?></p>
+		
+		<div id="mbc-staff-timeslots-manager">
+			<table class="wp-list-table widefat fixed striped">
+				<thead>
+					<tr>
+						<th><?php \esc_html_e( 'Weekday', 'mpeti-booking-calendar' ); ?></th>
+						<th><?php \esc_html_e( 'Start Time', 'mpeti-booking-calendar' ); ?></th>
+						<th><?php \esc_html_e( 'End Time', 'mpeti-booking-calendar' ); ?></th>
+						<th><?php \esc_html_e( 'Capacity', 'mpeti-booking-calendar' ); ?></th>
+						<th><?php \esc_html_e( 'Status', 'mpeti-booking-calendar' ); ?></th>
+						<th><?php \esc_html_e( 'Actions', 'mpeti-booking-calendar' ); ?></th>
+					</tr>
+				</thead>
+				<tbody id="mbc-staff-timeslots-list">
+					<?php if ( empty( $timeslots ) ) : ?>
+						<tr>
+							<td colspan="6"><?php \esc_html_e( 'No time slots configured. Add one below.', 'mpeti-booking-calendar' ); ?></td>
+						</tr>
+					<?php else : ?>
+						<?php foreach ( $timeslots as $slot ) : ?>
+							<tr data-id="<?php echo \esc_attr( $slot['id'] ); ?>">
+								<td><?php echo \esc_html( $weekdays[ (int) $slot['weekday'] ] ?? '' ); ?></td>
+								<td><?php echo \esc_html( $slot['start_time'] ); ?></td>
+								<td><?php echo \esc_html( $slot['end_time'] ); ?></td>
+								<td><?php echo \esc_html( $slot['capacity'] ); ?></td>
+								<td>
+									<?php if ( 1 === (int) $slot['is_active'] ) : ?>
+										<span class="mbc-status-active"><?php \esc_html_e( 'Active', 'mpeti-booking-calendar' ); ?></span>
+									<?php else : ?>
+										<span class="mbc-status-inactive"><?php \esc_html_e( 'Inactive', 'mpeti-booking-calendar' ); ?></span>
+									<?php endif; ?>
+								</td>
+								<td>
+									<button type="button" class="button button-small mbc-edit-slot" data-id="<?php echo \esc_attr( $slot['id'] ); ?>"><?php \esc_html_e( 'Edit', 'mpeti-booking-calendar' ); ?></button>
+									<button type="button" class="button button-small mbc-delete-slot" data-id="<?php echo \esc_attr( $slot['id'] ); ?>"><?php \esc_html_e( 'Delete', 'mpeti-booking-calendar' ); ?></button>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</tbody>
+			</table>
+
+			<h3><?php \esc_html_e( 'Add New Time Slot', 'mpeti-booking-calendar' ); ?></h3>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="mbc-staff-new-weekday"><?php \esc_html_e( 'Weekday', 'mpeti-booking-calendar' ); ?></label></th>
+					<td>
+						<select id="mbc-staff-new-weekday" name="mbc_staff_new_weekday">
+							<?php foreach ( $weekdays as $num => $day ) : ?>
+								<option value="<?php echo \esc_attr( $num ); ?>"><?php echo \esc_html( $day ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="mbc-staff-new-start"><?php \esc_html_e( 'Start Time', 'mpeti-booking-calendar' ); ?></label></th>
+					<td><input type="time" id="mbc-staff-new-start" name="mbc_staff_new_start" value="09:00" required /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="mbc-staff-new-end"><?php \esc_html_e( 'End Time', 'mpeti-booking-calendar' ); ?></label></th>
+					<td><input type="time" id="mbc-staff-new-end" name="mbc_staff_new_end" value="17:00" required /></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="mbc-staff-new-capacity"><?php \esc_html_e( 'Capacity', 'mpeti-booking-calendar' ); ?></label></th>
+					<td><input type="number" id="mbc-staff-new-capacity" name="mbc_staff_new_capacity" value="1" min="1" required /></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php \esc_html_e( 'Active', 'mpeti-booking-calendar' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" id="mbc-staff-new-active" name="mbc_staff_new_active" value="1" checked />
+							<?php \esc_html_e( 'Enable this time slot', 'mpeti-booking-calendar' ); ?>
+						</label>
+					</td>
+				</tr>
+			</table>
+			<p>
+				<button type="button" id="mbc-staff-add-timeslot" class="button button-primary" data-staff-id="<?php echo \esc_attr( $staff_id ); ?>"><?php \esc_html_e( 'Add Time Slot', 'mpeti-booking-calendar' ); ?></button>
+			</p>
+		</div>
+		<script>
+		jQuery(document).ready(function($) {
+			$('#mbc-staff-add-timeslot').on('click', function() {
+				const staffId = $(this).data('staff-id');
+				const data = {
+					action: 'mbc_save_timeslot',
+					nonce: mbcTimeslots.nonce,
+					weekday: $('#mbc-staff-new-weekday').val(),
+					staff_id: staffId,
+					start_time: $('#mbc-staff-new-start').val(),
+					end_time: $('#mbc-staff-new-end').val(),
+					capacity: $('#mbc-staff-new-capacity').val(),
+					is_active: $('#mbc-staff-new-active').is(':checked') ? 1 : 0
+				};
+				$.post(mbcTimeslots.ajaxUrl, data, function(response) {
+					if (response.success) {
+						location.reload();
+					} else {
+						alert(response.data || 'Error saving time slot');
+					}
+				});
+			});
+
+			$('.mbc-delete-slot').on('click', function() {
+				if (!confirm('<?php \esc_html_e( 'Are you sure you want to delete this time slot?', 'mpeti-booking-calendar' ); ?>')) {
+					return;
+				}
+				const id = $(this).data('id');
+				$.post(mbcTimeslots.ajaxUrl, {
+					action: 'mbc_delete_timeslot',
+					nonce: mbcTimeslots.nonce,
+					id: id
+				}, function(response) {
+					if (response.success) {
+						location.reload();
+					} else {
+						alert(response.data || 'Error deleting time slot');
+					}
+				});
+			});
+		});
+		</script>
+		<?php
 	}
 }
 

@@ -50,6 +50,11 @@ class Settings {
 			\wp_send_json_error( \__( 'Start and end times are required', 'mpeti-booking-calendar' ) );
 		}
 
+		// Ensure staff_id is provided (should be set from the staff member page)
+		if ( ! $staff_id ) {
+			\wp_send_json_error( \__( 'Staff ID is required', 'mpeti-booking-calendar' ) );
+		}
+
 		$result = $wpdb->insert(
 			$table,
 			array(
@@ -136,9 +141,7 @@ class Settings {
 					</tr>
 				</table>
 
-				<h2><?php \esc_html_e( 'Time Slots', 'mpeti-booking-calendar' ); ?></h2>
-				<p><?php \esc_html_e( 'Manage weekday/staff availability. Set up time slots for each day of the week.', 'mpeti-booking-calendar' ); ?></p>
-				<?php $this->render_timeslots_section(); ?>
+				<p class="description"><?php \esc_html_e( 'Time slots are now managed on individual staff member pages. Go to Staff → select a staff member → Time Slots meta box.', 'mpeti-booking-calendar' ); ?></p>
 
 				<h2><?php \esc_html_e( 'Integrations', 'mpeti-booking-calendar' ); ?></h2>
 				<p><?php \esc_html_e( 'Google Calendar placeholder. Configure in code.', 'mpeti-booking-calendar' ); ?></p>

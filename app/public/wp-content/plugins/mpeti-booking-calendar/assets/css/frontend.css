@@ -212,6 +212,8 @@
 	margin-top: 24px;
 	padding-top: 20px;
 	border-top: 2px solid #e0e0e0;
+	position: relative;
+	z-index: 10;
 }
 
 .mbc-selected-date {
@@ -225,6 +227,8 @@
 	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 	gap: 8px;
 	pointer-events: auto;
+	position: relative;
+	z-index: 1;
 }
 
 .mbc-slot {
@@ -562,12 +566,14 @@
 	transition: all 0.2s;
 	text-align: center;
 	position: relative;
+	z-index: 100;
 }
 
 .mbc-staff-card:hover {
 	border-color: #4caf50;
 	transform: translateY(-2px);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	z-index: 10001;
 }
 
 .mbc-staff-card.selected {
@@ -602,7 +608,7 @@
 	top: calc(100% + 12px);
 	left: 50%;
 	transform: translateX(-50%);
-	z-index: 1000;
+	z-index: 10000;
 	width: 420px;
 	background: #fff;
 	border-radius: 12px;
@@ -783,6 +789,8 @@
 	margin-top: 24px;
 	padding-top: 24px;
 	border-top: 2px solid #e0e0e0;
+	position: relative;
+	z-index: 50;
 }
 
 /* Service Selection Grid */

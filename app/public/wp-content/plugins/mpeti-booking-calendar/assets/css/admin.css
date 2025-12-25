@@ -2,19 +2,389 @@
 	padding: 10px 0;
 }
 
-.mbc-admin-filters {
-	display: flex;
-	gap: 12px;
+.mbc-admin-search-group {
 	margin-bottom: 16px;
-	padding: 12px;
-	background: #fff;
 	border: 1px solid #ddd;
 	border-radius: 4px;
+	padding: 12px;
+	background: #fafafa;
 }
 
-.mbc-admin-filters .components-base-control {
+.mbc-admin-search-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	transition: color 0.2s;
+}
+
+.mbc-admin-search-header:hover {
+	color: #2271b1;
+}
+
+.mbc-search-group-title {
 	flex: 1;
-	min-width: 150px;
+}
+
+.mbc-search-group-toggle {
+	display: inline-block;
+	font-size: 10px;
+	color: #646970;
+	transition: transform 0.2s ease, color 0.2s;
+	margin-left: 8px;
+}
+
+.mbc-search-group-toggle.is-expanded {
+	transform: rotate(180deg);
+}
+
+.mbc-admin-search-header:hover .mbc-search-group-toggle {
+	color: #2271b1;
+}
+
+.mbc-admin-search-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.mbc-search-fields-row {
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+	flex-wrap: wrap;
+	align-items: flex-end;
+}
+
+.mbc-search-field-group {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	position: relative;
+	flex: 1;
+	min-width: 200px;
+}
+
+.mbc-search-actions {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.mbc-search-label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.mbc-search-input {
+	padding: 8px 12px;
+	font-size: 13px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+	transition: border-color 0.2s, box-shadow 0.2s;
+	width: 100%;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.mbc-search-input[type="date"] {
+	cursor: pointer;
+	position: relative;
+}
+
+.mbc-search-input[type="date"]::-webkit-calendar-picker-indicator {
+	cursor: pointer;
+	opacity: 1;
+}
+
+.mbc-search-input:focus {
+	outline: none;
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.mbc-search-clear-date {
+	position: absolute;
+	right: 8px;
+	top: 28px;
+	background: #f0f0f1;
+	border: none;
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	font-size: 16px;
+	line-height: 1;
+	color: #646970;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s, color 0.2s;
+}
+
+.mbc-search-clear-date:hover {
+	background: #dcdcde;
+	color: #1d2327;
+}
+
+.mbc-search-button {
+	padding: 8px 16px;
+	background: #2271b1;
+	border: 1px solid #2271b1;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s, border-color 0.2s;
+	white-space: nowrap;
+}
+
+.mbc-search-button:hover {
+	background: #135e96;
+	border-color: #135e96;
+}
+
+.mbc-search-clear-all {
+	padding: 8px 16px;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	color: #1d2327;
+	font-size: 13px;
+	cursor: pointer;
+	transition: background 0.2s, border-color 0.2s;
+	white-space: nowrap;
+}
+
+.mbc-search-clear-all:hover {
+	background: #dcdcde;
+	border-color: #8c8f94;
+}
+
+.mbc-admin-search-group {
+	margin-bottom: 16px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 12px;
+	background: #fafafa;
+}
+
+.mbc-admin-search-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+	transition: color 0.2s;
+}
+
+.mbc-admin-search-header:hover {
+	color: #2271b1;
+}
+
+.mbc-search-group-title {
+	flex: 1;
+}
+
+.mbc-search-group-toggle {
+	display: inline-block;
+	font-size: 10px;
+	color: #646970;
+	transition: transform 0.2s ease, color 0.2s;
+	margin-left: 8px;
+}
+
+.mbc-search-group-toggle.is-expanded {
+	transform: rotate(180deg);
+}
+
+.mbc-admin-search-header:hover .mbc-search-group-toggle {
+	color: #2271b1;
+}
+
+.mbc-admin-filters-container {
+	margin-bottom: 16px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 12px;
+	background: #fafafa;
+}
+
+.mbc-admin-filters-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+	transition: color 0.2s;
+}
+
+.mbc-admin-filters-header:hover {
+	color: #2271b1;
+}
+
+.mbc-filters-group-title {
+	flex: 1;
+}
+
+.mbc-filters-group-toggle {
+	display: inline-block;
+	font-size: 10px;
+	color: #646970;
+	transition: transform 0.2s ease, color 0.2s;
+	margin-left: 8px;
+}
+
+.mbc-filters-group-toggle.is-expanded {
+	transform: rotate(180deg);
+}
+
+.mbc-admin-filters-header:hover .mbc-filters-group-toggle {
+	color: #2271b1;
+}
+
+.mbc-admin-filters-content {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.mbc-admin-filters {
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.mbc-filter-group {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 12px;
+	background: #fafafa;
+	flex: 1;
+	min-width: 200px;
+}
+
+.mbc-filter-group-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	transition: color 0.2s;
+}
+
+.mbc-filter-group-header:hover {
+	color: #2271b1;
+}
+
+.mbc-filter-group-title {
+	flex: 1;
+}
+
+.mbc-filter-group-toggle {
+	display: inline-block;
+	font-size: 10px;
+	color: #646970;
+	transition: transform 0.2s ease, color 0.2s;
+	margin-left: 8px;
+}
+
+.mbc-filter-group-toggle.is-expanded {
+	transform: rotate(180deg);
+}
+
+.mbc-filter-group-header:hover .mbc-filter-group-toggle {
+	color: #2271b1;
+}
+
+.mbc-filter-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.mbc-filter-button {
+	padding: 6px 12px;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	color: #2c3338;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	line-height: 1.5;
+	font-weight: 400;
+}
+
+.mbc-filter-button:hover {
+	background: #dcdcde;
+	border-color: #8c8f94;
+	color: #1d2327;
+}
+
+.mbc-filter-button.is-selected {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+	font-weight: 500;
+}
+
+.mbc-filter-button.is-selected:hover {
+	background: #135e96;
+	border-color: #135e96;
+}
+
+.mbc-filter-all {
+	font-weight: 600;
+}
+
+.mbc-filter-all.is-selected {
+	background: #4caf50;
+	border-color: #4caf50;
+}
+
+.mbc-filter-all.is-selected:hover {
+	background: #45a049;
+	border-color: #45a049;
 }
 
 .mbc-admin-appointments-container {
@@ -39,6 +409,36 @@
 	font-weight: 600;
 	color: #333;
 	border-bottom: 1px solid #e0e0e0;
+}
+
+.mbc-admin-staff-header-clickable {
+	cursor: pointer;
+	user-select: none;
+	transition: background 0.2s;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.mbc-admin-staff-header-clickable:hover {
+	background: #f0f0f0;
+}
+
+.mbc-staff-group-toggle {
+	display: inline-block;
+	font-size: 10px;
+	color: #646970;
+	transition: transform 0.2s ease, color 0.2s;
+	width: 16px;
+	text-align: center;
+}
+
+.mbc-admin-staff-header-clickable:hover .mbc-staff-group-toggle {
+	color: #2271b1;
+}
+
+.mbc-staff-group-name {
+	flex: 1;
 }
 
 .mbc-admin-date-group {
@@ -169,6 +569,29 @@
 	color: #777;
 }
 
+.mbc-admin-appointment-confirm {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 10px;
+	background: #4caf50;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	font-size: 0.9em;
+	line-height: 1.2;
+	transition: background 0.2s;
+	cursor: pointer;
+	white-space: nowrap;
+	font-weight: 500;
+	margin-left: 8px;
+}
+
+.mbc-admin-appointment-confirm:hover {
+	background: #45a049;
+	color: #fff;
+}
+
 .mbc-admin-appointment-edit {
 	display: inline-flex;
 	align-items: center;
@@ -230,4 +653,368 @@
 #mbc-timeslots-manager h3 {
 	margin-top: 24px;
 	margin-bottom: 12px;
+}
+
+/* View Toggle */
+.mbc-view-toggle {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+	padding: 8px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.mbc-view-toggle-btn {
+	padding: 8px 16px;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	color: #2c3338;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-weight: 500;
+}
+
+.mbc-view-toggle-btn:hover {
+	background: #dcdcde;
+	border-color: #8c8f94;
+}
+
+.mbc-view-toggle-btn.is-active {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+/* Calendar View */
+.mbc-admin-calendar-view {
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 16px;
+}
+
+.mbc-calendar-week-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	padding-bottom: 16px;
+	border-bottom: 2px solid #e0e0e0;
+}
+
+.mbc-week-range {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.mbc-week-nav-button {
+	padding: 8px 16px;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	color: #2c3338;
+	font-size: 13px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.mbc-week-nav-button:hover {
+	background: #dcdcde;
+	border-color: #8c8f94;
+}
+
+.mbc-today-button {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+.mbc-today-button:hover {
+	background: #135e96;
+	border-color: #135e96;
+}
+
+.mbc-calendar-week-container {
+	display: flex;
+	gap: 12px;
+	overflow-x: auto;
+}
+
+.mbc-calendar-time-column {
+	flex-shrink: 0;
+	width: 80px;
+}
+
+.mbc-calendar-time-header {
+	height: 60px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.mbc-calendar-time-slot {
+	height: 50px;
+	border-bottom: 1px solid #f0f0f0;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-right: 8px;
+	font-size: 11px;
+	color: #646970;
+}
+
+.mbc-calendar-week-grid {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 12px;
+	flex: 1;
+}
+
+.mbc-calendar-day-column {
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	background: #fafafa;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.mbc-calendar-day-column.is-today {
+	border-color: #2271b1;
+	border-width: 2px;
+	background: #f0f7ff;
+}
+
+.mbc-calendar-day-header {
+	padding: 12px;
+	background: #fff;
+	border-bottom: 1px solid #e0e0e0;
+	border-radius: 4px 4px 0 0;
+	text-align: center;
+}
+
+.mbc-calendar-day-column.is-today .mbc-calendar-day-header {
+	background: #2271b1;
+	color: #fff;
+}
+
+.mbc-calendar-day-name {
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	color: #646970;
+	margin-bottom: 4px;
+}
+
+.mbc-calendar-day-column.is-today .mbc-calendar-day-name {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.mbc-calendar-day-date {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.mbc-calendar-day-column.is-today .mbc-calendar-day-date {
+	color: #fff;
+}
+
+.mbc-calendar-day-time-grid {
+	flex: 1;
+	position: relative;
+	min-height: 1200px; /* 24 time slots * 50px */
+}
+
+.mbc-calendar-time-row {
+	height: 50px;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.mbc-calendar-day-appointments {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+}
+
+.mbc-calendar-no-appointments {
+	padding: 20px;
+	text-align: center;
+	color: #8c8f94;
+	font-size: 12px;
+	font-style: italic;
+}
+
+.mbc-calendar-appointment-item {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-left: 3px solid #4caf50;
+	border-radius: 4px;
+	padding: 6px;
+	margin-bottom: 2px;
+	transition: all 0.2s;
+	cursor: pointer;
+	overflow: hidden;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	box-sizing: border-box;
+	pointer-events: all;
+	z-index: 10;
+	min-height: 50px;
+}
+
+.mbc-calendar-appointment-item:hover {
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-left-color: #2271b1;
+	z-index: 20;
+}
+
+.mbc-calendar-appointment-content {
+	display: flex;
+	flex-direction: row;
+	height: 100%;
+	overflow: visible;
+	box-sizing: border-box;
+	gap: 8px;
+}
+
+.mbc-calendar-appointment-avatar {
+	flex-shrink: 0;
+	display: flex;
+	align-items: flex-start;
+	padding-top: 2px;
+}
+
+.mbc-calendar-appointment-right {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.mbc-calendar-appointment-time {
+	font-size: 10px;
+	font-weight: 600;
+	color: #2271b1;
+	margin-bottom: 3px;
+	white-space: nowrap;
+	line-height: 1.3;
+}
+
+.mbc-calendar-appointment-details {
+	flex: 1;
+	overflow: visible;
+	margin-bottom: 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.mbc-calendar-appointment-customer {
+	font-size: 11px;
+	font-weight: 600;
+	color: #1d2327;
+	margin-bottom: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.3;
+}
+
+.mbc-calendar-appointment-service {
+	font-size: 10px;
+	color: #2271b1;
+	font-weight: 500;
+	margin-bottom: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
+	line-height: 1.3;
+}
+
+.mbc-calendar-appointment-staff {
+	font-size: 10px;
+	color: #646970;
+	margin-bottom: 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.3;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.mbc-calendar-appointment-staff-icon {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+	border: 2px solid #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.mbc-calendar-appointment-staff-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mbc-calendar-appointment-status {
+	font-size: 9px;
+	padding: 2px 5px;
+	border-radius: 2px;
+	display: inline-block;
+	text-transform: capitalize;
+	white-space: nowrap;
+	line-height: 1.2;
+	margin-top: 2px;
+}
+
+.mbc-calendar-appointment-actions {
+	display: flex;
+	gap: 4px;
+	justify-content: flex-end;
+	margin-top: auto;
+	padding-top: 2px;
+}
+
+.mbc-calendar-confirm-btn,
+.mbc-calendar-edit-btn {
+	padding: 4px 8px;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+	font-size: 12px;
+	cursor: pointer;
+	text-decoration: none;
+	color: #2c3338;
+	transition: all 0.2s;
+	line-height: 1;
+}
+
+.mbc-calendar-confirm-btn {
+	background: #4caf50;
+	border-color: #4caf50;
+	color: #fff;
+}
+
+.mbc-calendar-confirm-btn:hover {
+	background: #45a049;
+	border-color: #45a049;
+}
+
+.mbc-calendar-edit-btn:hover {
+	background: #dcdcde;
+	border-color: #8c8f94;
 }

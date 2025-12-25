@@ -78,6 +78,33 @@ class Rest {
 
 		\register_rest_route(
 			'mpeti-booking-calendar/v1',
+			'/appointments/(?P<id>\d+)/status',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'update_appointment_status' ),
+				'permission_callback' => function() {
+					return \current_user_can( 'manage_options' );
+				},
+				'args'                => array(
+					'id'     => array(
+						'required'          => true,
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+					),
+					'status' => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => function( $value ) {
+							return in_array( $value, array( 'pending', 'confirmed', 'cancelled' ), true );
+						},
+					),
+				),
+			)
+		);
+
+		\register_rest_route(
+			'mpeti-booking-calendar/v1',
 			'/available-staff',
 			array(
 				'methods'             => 'GET',
@@ -152,8 +179,22 @@ class Rest {
 	public function book_slot( WP_REST_Request $request ) {
 		$params = $request->get_params();
 
-		$nonce = isset( $params['nonce'] ) ? \sanitize_text_field( $params['nonce'] ) : '';
-		if ( ! \wp_verify_nonce( $nonce, 'mbc_frontend_booking' ) ) {
+		// Verify nonce - accept either form nonce or REST API nonce
+		$nonce_valid = false;
+		
+		// First, try the form nonce from FormData
+		if ( isset( $params['nonce'] ) && ! empty( $params['nonce'] ) ) {
+			$form_nonce = \sanitize_text_field( $params['nonce'] );
+			$nonce_valid = \wp_verify_nonce( $form_nonce, 'mbc_frontend_booking' );
+		}
+		
+		// If form nonce fails or doesn't exist, try REST API nonce from headers
+		if ( ! $nonce_valid && $request->get_header( 'X-WP-Nonce' ) ) {
+			$rest_nonce = $request->get_header( 'X-WP-Nonce' );
+			$nonce_valid = \wp_verify_nonce( $rest_nonce, 'wp_rest' );
+		}
+
+		if ( ! $nonce_valid ) {
 			return new WP_Error( 'invalid_nonce', \__( 'Invalid submission.', 'mpeti-booking-calendar' ), array( 'status' => 403 ) );
 		}
 
@@ -316,26 +357,72 @@ class Rest {
 			'post_type'      => 'mbc_appointment',
 			'post_status'    => 'publish',
 			'posts_per_page' => 200,
-			'meta_query'     => array(),
+			'meta_query'     => array(
+				'relation' => 'AND',
+			),
 		);
 
-		if ( $request->get_param( 'status' ) ) {
-			$args['meta_query'][] = array(
-				'key'   => 'appointment_status',
-				'value' => \sanitize_text_field( $request->get_param( 'status' ) ),
-			);
+		// Handle status filter (can be array for multiselect)
+		$status_param = $request->get_param( 'status' );
+		if ( $status_param ) {
+			$status_values = is_array( $status_param ) ? $status_param : array( $status_param );
+			if ( ! empty( $status_values ) ) {
+				$sanitized_status = array_map( 'sanitize_text_field', $status_values );
+				if ( count( $sanitized_status ) === 1 ) {
+					$args['meta_query'][] = array(
+						'key'   => 'appointment_status',
+						'value' => $sanitized_status[0],
+					);
+				} else {
+					$args['meta_query'][] = array(
+						'key'     => 'appointment_status',
+						'value'   => $sanitized_status,
+						'compare' => 'IN',
+					);
+				}
+			}
 		}
-		if ( $request->get_param( 'staff' ) ) {
-			$args['meta_query'][] = array(
-				'key'   => 'staff_id',
-				'value' => \intval( $request->get_param( 'staff' ) ),
-			);
+
+		// Handle staff filter (can be array for multiselect)
+		$staff_param = $request->get_param( 'staff' );
+		if ( $staff_param ) {
+			$staff_values = is_array( $staff_param ) ? $staff_param : array( $staff_param );
+			if ( ! empty( $staff_values ) ) {
+				$sanitized_staff = array_map( 'absint', $staff_values );
+				if ( count( $sanitized_staff ) === 1 ) {
+					$args['meta_query'][] = array(
+						'key'   => 'staff_id',
+						'value' => $sanitized_staff[0],
+					);
+				} else {
+					$args['meta_query'][] = array(
+						'key'     => 'staff_id',
+						'value'   => $sanitized_staff,
+						'compare' => 'IN',
+					);
+				}
+			}
 		}
-		if ( $request->get_param( 'service' ) ) {
-			$args['meta_query'][] = array(
-				'key'   => 'service_id',
-				'value' => \intval( $request->get_param( 'service' ) ),
-			);
+
+		// Handle service filter (can be array for multiselect)
+		$service_param = $request->get_param( 'service' );
+		if ( $service_param ) {
+			$service_values = is_array( $service_param ) ? $service_param : array( $service_param );
+			if ( ! empty( $service_values ) ) {
+				$sanitized_service = array_map( 'absint', $service_values );
+				if ( count( $sanitized_service ) === 1 ) {
+					$args['meta_query'][] = array(
+						'key'   => 'service_id',
+						'value' => $sanitized_service[0],
+					);
+				} else {
+					$args['meta_query'][] = array(
+						'key'     => 'service_id',
+						'value'   => $sanitized_service,
+						'compare' => 'IN',
+					);
+				}
+			}
 		}
 
 		$query = new \WP_Query( $args );
@@ -347,15 +434,28 @@ class Rest {
 			$service_id = \get_post_meta( $post_id, 'service_id', true );
 			
 			$staff_name = '';
+			$staff_photo_url = '';
 			if ( $staff_id ) {
 				$staff_post = \get_post( $staff_id );
 				$staff_name = $staff_post ? $staff_post->post_title : '';
+				$photo_id = \get_post_meta( $staff_id, 'staff_photo', true );
+				if ( $photo_id ) {
+					$staff_photo_url = \wp_get_attachment_image_url( $photo_id, 'thumbnail' );
+				}
 			}
 			
 			$service_name = '';
+			$service_duration = 60; // Default duration
 			if ( $service_id ) {
 				$service_post = \get_post( $service_id );
 				$service_name = $service_post ? $service_post->post_title : '';
+				$service_duration = \get_post_meta( $service_id, 'service_duration', true );
+				if ( ! $service_duration ) {
+					$settings = \get_option( 'mpeti_booking_calendar_settings', array() );
+					$service_duration = isset( $settings['default_duration'] ) ? (int) $settings['default_duration'] : 60;
+				} else {
+					$service_duration = (int) $service_duration;
+				}
 			}
 			
 			$data[] = array(
@@ -368,14 +468,49 @@ class Rest {
 				'status'   => \get_post_meta( $post_id, 'appointment_status', true ) ?: 'pending',
 				'staff'    => $staff_id,
 				'staff_name' => $staff_name,
+				'staff_photo' => $staff_photo_url,
 				'service'  => $service_id,
 				'service_name' => $service_name,
+				'service_duration' => $service_duration,
 				'staff_color'   => $staff_id ? \get_post_meta( $staff_id, 'staff_color', true ) : '',
 				'service_color' => $service_id ? \get_post_meta( $service_id, 'service_color', true ) : '',
 			);
 		}
 
 		return new WP_REST_Response( $data );
+	}
+
+	public function update_appointment_status( WP_REST_Request $request ) {
+		$appointment_id = $request->get_param( 'id' );
+		// Get status from body (JSON) or params
+		$body = $request->get_json_params();
+		$status = isset( $body['status'] ) ? $body['status'] : $request->get_param( 'status' );
+
+		if ( ! \current_user_can( 'edit_post', $appointment_id ) ) {
+			return new WP_Error( 'permission_denied', \__( 'You do not have permission to update this appointment.', 'mpeti-booking-calendar' ), array( 'status' => 403 ) );
+		}
+
+		$post = \get_post( $appointment_id );
+		if ( ! $post || 'mbc_appointment' !== $post->post_type ) {
+			return new WP_Error( 'invalid_appointment', \__( 'Invalid appointment ID.', 'mpeti-booking-calendar' ), array( 'status' => 404 ) );
+		}
+
+		$old_status = \get_post_meta( $appointment_id, 'appointment_status', true );
+		\update_post_meta( $appointment_id, 'appointment_status', $status );
+
+		// Send email notifications if status changed
+		if ( $status !== $old_status ) {
+			$this->email->send_admin_notification( $appointment_id );
+			$this->email->send_customer_notification( $appointment_id );
+		}
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'status'  => $status,
+				'message' => \__( 'Appointment status updated.', 'mpeti-booking-calendar' ),
+			)
+		);
 	}
 
 	public function get_all_staff( WP_REST_Request $request ) {

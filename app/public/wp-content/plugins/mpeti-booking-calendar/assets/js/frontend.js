@@ -821,12 +821,28 @@
 			}
 
 			const data = new FormData(formEl);
-			data.append('nonce', MBCBooking.nonce);
+			// Append nonce to FormData
+			if (MBCBooking.nonce) {
+				data.append('nonce', MBCBooking.nonce);
+			}
+
+			// Log for debugging
+			console.log('Submitting booking with nonce:', MBCBooking.nonce ? 'present' : 'missing');
+			console.log('Form data:', {
+				name: data.get('name'),
+				email: data.get('email'),
+				date: data.get('date'),
+				time: data.get('time'),
+				service_id: data.get('service_id'),
+				staff_id: data.get('staff_id')
+			});
 
 			apiFetch({
 				path: '/mpeti-booking-calendar/v1/book',
 				method: 'POST',
-				headers: { 'X-WP-Nonce': MBCBooking.restNonce },
+				headers: { 
+					'X-WP-Nonce': MBCBooking.restNonce,
+				},
 				body: data,
 			})
 			.then((res) => {

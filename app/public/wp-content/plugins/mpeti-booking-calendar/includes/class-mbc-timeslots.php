@@ -139,6 +139,8 @@ class Timeslots {
 	}
 
 	protected function count_appointments( string $date, string $time, ?int $staff_id, ?int $service_id ): int {
+		// Note: service_id is not used for availability checking - availability is based on staff member only
+		// service_id is only used for duration calculation in get_available_slots()
 		$args = array(
 			'post_type'      => 'mbc_appointment',
 			'post_status'    => array( 'publish', 'pending', 'draft' ),
@@ -162,12 +164,8 @@ class Timeslots {
 				'value' => $staff_id,
 			);
 		}
-		if ( $service_id ) {
-			$args['meta_query'][] = array(
-				'key'   => 'service_id',
-				'value' => $service_id,
-			);
-		}
+		// Removed service_id filter - availability is based on staff member only
+		// If a staff member has a booking at this time (regardless of service), the slot is unavailable
 
 		$query = new \WP_Query( $args );
 		return (int) $query->found_posts;

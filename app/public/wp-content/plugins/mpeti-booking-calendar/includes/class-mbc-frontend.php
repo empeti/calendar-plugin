@@ -45,20 +45,24 @@ class Frontend {
 			MBC_PLUGIN_VERSION,
 			true
 		);
-		\wp_localize_script(
-			'mbc-frontend',
-			'MBCBooking',
-			array(
-				'restUrl'   => \esc_url_raw( \rest_url( 'mpeti-booking-calendar/v1' ) ),
-				'restNonce' => \wp_create_nonce( 'wp_rest' ),
-				'nonce'     => \wp_create_nonce( 'mbc_frontend_booking' ),
-				'i18n'      => array(
-					'submit'  => \__( 'Book', 'mpeti-booking-calendar' ),
-					'success' => \__( 'Your appointment has been requested.', 'mpeti-booking-calendar' ),
-					'error'   => \__( 'There was an error. Please try again.', 'mpeti-booking-calendar' ),
-				),
-			)
-		);
+			\wp_localize_script(
+				'mbc-frontend',
+				'MBCBooking',
+				array(
+					'restUrl'   => \esc_url_raw( \rest_url( 'mpeti-booking-calendar/v1' ) ),
+					'restNonce' => \wp_create_nonce( 'wp_rest' ),
+					'nonce'     => \wp_create_nonce( 'mbc_frontend_booking' ),
+					'i18n'      => array(
+						'submit'        => \__( 'Book', 'mpeti-booking-calendar' ),
+						'success'       => \__( 'Your appointment has been requested.', 'mpeti-booking-calendar' ),
+						'error'         => \__( 'There was an error. Please try again.', 'mpeti-booking-calendar' ),
+						'thankYou'      => \__( 'Thank You!', 'mpeti-booking-calendar' ),
+						'successMessage' => \__( 'Your appointment request has been submitted successfully.', 'mpeti-booking-calendar' ),
+						'successDetails' => \__( 'We will review your request and send you a confirmation email shortly.', 'mpeti-booking-calendar' ),
+						'newAppointment' => \__( 'Book Another Appointment', 'mpeti-booking-calendar' ),
+					),
+				)
+			);
 	}
 
 	protected function should_load_assets(): bool {

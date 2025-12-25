@@ -984,3 +984,78 @@
 	border: 1px solid #e57373;
 }
 
+/* Booking Success Message */
+.mbc-booking-success {
+	text-align: center;
+	padding: 40px 20px;
+	background: #f9f9f9;
+	border: 2px solid #4caf50;
+	border-radius: 8px;
+	margin: 20px 0;
+	display: none; /* Hidden by default, shown via JS */
+}
+
+.mbc-booking-success[style*="display: block"],
+.mbc-booking-success.show {
+	display: block !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.mbc-success-icon {
+	width: 80px;
+	height: 80px;
+	margin: 0 auto 20px;
+	background: #4caf50;
+	color: #fff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 48px;
+	font-weight: bold;
+	line-height: 1;
+}
+
+.mbc-booking-success h3 {
+	margin: 0 0 12px 0;
+	font-size: 1.8em;
+	color: #2e7d32;
+}
+
+.mbc-success-message {
+	font-size: 1.1em;
+	color: #333;
+	margin: 0 0 12px 0;
+	font-weight: 500;
+}
+
+.mbc-success-details {
+	font-size: 0.95em;
+	color: #666;
+	margin: 0 0 24px 0;
+	line-height: 1.6;
+}
+
+.mbc-new-appointment-btn {
+	padding: 12px 24px;
+	font-size: 1em;
+	font-weight: 600;
+	background: #4caf50;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.mbc-new-appointment-btn:hover {
+	background: #45a049;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.mbc-new-appointment-btn:active {
+	transform: translateY(0);
+}
+

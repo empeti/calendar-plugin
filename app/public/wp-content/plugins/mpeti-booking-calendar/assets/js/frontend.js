@@ -830,17 +830,8 @@
 				body: data,
 			})
 			.then((res) => {
-				if (res && res.success) {
-					message(MBCBooking.i18n.success || 'Your appointment has been requested.', 'success');
-					formEl.reset();
-					resetSelections();
-					if (serviceSelect) {
-						serviceSelect.value = '';
-						selectedService = null;
-						if (calendarEl) {
-							calendarEl.classList.add('mbc-disabled');
-						}
-					}
+				if (res && res.success === true) {
+					showBookingSuccess();
 				} else {
 					const errorMsg = (res && res.message) || MBCBooking.i18n.error || 'There was an error. Please try again.';
 					message(errorMsg, 'error');
@@ -854,10 +845,170 @@
 		});
 	}
 
+	// Show booking success message
+	function showBookingSuccess() {
+		console.log('showBookingSuccess called');
+		
+		// Ensure booking form container is visible FIRST
+		const bookingFormContainer = document.getElementById('mbc-booking-form');
+		console.log('Booking form container:', bookingFormContainer);
+		if (bookingFormContainer) {
+			bookingFormContainer.style.display = 'block';
+			bookingFormContainer.style.visibility = 'visible';
+		}
+		
+		// Hide all form elements
+		if (formEl) {
+			formEl.style.display = 'none';
+		}
+		
+		// Hide appointment details
+		const selectedAppointmentEl = document.getElementById('mbc-selected-appointment');
+		if (selectedAppointmentEl) {
+			selectedAppointmentEl.style.display = 'none';
+		}
+		
+		// Hide timeslots
+		if (timeSlotsContainer) {
+			timeSlotsContainer.style.display = 'none';
+		}
+		
+		// Hide staff list
+		const staffStep = document.querySelector('.mbc-step-staff');
+		if (staffStep) {
+			staffStep.style.display = 'none';
+		}
+		
+		// Hide calendar
+		if (calendarEl) {
+			calendarEl.style.display = 'none';
+		}
+		
+		// Hide service selection container
+		const serviceStep = document.querySelector('.mbc-step-service');
+		if (serviceStep) {
+			serviceStep.style.display = 'none';
+		}
+		
+		// Hide service grid (backup)
+		if (serviceGrid) {
+			serviceGrid.style.display = 'none';
+		}
+		
+		// Show success message - try to find or create it
+		let successEl = document.getElementById('mbc-booking-success');
+		console.log('Success element found:', successEl);
+		
+		// If not found, try to create it dynamically
+		if (!successEl && bookingFormContainer) {
+			console.log('Creating success element dynamically');
+			successEl = document.createElement('div');
+			successEl.id = 'mbc-booking-success';
+			successEl.className = 'mbc-booking-success show';
+			successEl.innerHTML = `
+				<div class="mbc-success-icon">✓</div>
+				<h3>${MBCBooking.i18n.thankYou || 'Thank You!'}</h3>
+				<p class="mbc-success-message">
+					${MBCBooking.i18n.successMessage || 'Your appointment request has been submitted successfully.'}
+				</p>
+				<p class="mbc-success-details">
+					${MBCBooking.i18n.successDetails || 'We will review your request and send you a confirmation email shortly.'}
+				</p>
+				<button type="button" class="button button-primary mbc-new-appointment-btn" id="mbc-new-appointment-btn">
+					${MBCBooking.i18n.newAppointment || 'Book Another Appointment'}
+				</button>
+			`;
+			bookingFormContainer.appendChild(successEl);
+		}
+		
+		if (successEl) {
+			// Show immediately
+			successEl.style.display = 'block';
+			successEl.style.visibility = 'visible';
+			successEl.style.opacity = '1';
+			successEl.removeAttribute('hidden');
+			successEl.setAttribute('aria-hidden', 'false');
+			successEl.classList.add('show');
+			
+			// Also try with a delay to ensure it's visible
+			setTimeout(() => {
+				successEl.style.display = 'block';
+				successEl.style.visibility = 'visible';
+				successEl.style.opacity = '1';
+				successEl.classList.add('show');
+				successEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+				
+				// Ensure button handler is attached
+				const newAppointmentBtn = document.getElementById('mbc-new-appointment-btn');
+				console.log('New appointment button:', newAppointmentBtn);
+				if (newAppointmentBtn) {
+					// Remove any existing listeners to avoid duplicates
+					const newBtn = newAppointmentBtn.cloneNode(true);
+					newAppointmentBtn.parentNode.replaceChild(newBtn, newAppointmentBtn);
+					newBtn.addEventListener('click', startNewAppointment);
+				}
+			}, 100);
+		} else {
+			console.error('Could not find or create success element!');
+		}
+		
+		// Reset form
+		if (formEl) {
+			formEl.reset();
+		}
+	}
+
+	// Start new appointment
+	function startNewAppointment() {
+		// Hide success message
+		const successEl = document.getElementById('mbc-booking-success');
+		if (successEl) {
+			successEl.style.display = 'none';
+			successEl.classList.remove('show');
+		}
+		
+		// Reset all selections
+		resetSelections();
+		selectedService = null;
+		
+		// Clear service selection
+		if (serviceSelect) {
+			serviceSelect.value = '';
+		}
+		if (serviceGrid) {
+			serviceGrid.querySelectorAll('.mbc-service-card').forEach(card => {
+				card.classList.remove('selected');
+			});
+			serviceGrid.style.display = 'grid';
+		}
+		
+		// Reset calendar
+		if (calendarEl) {
+			calendarEl.classList.add('mbc-disabled');
+			calendarEl.style.display = 'block';
+			// Clear selected date
+			calendarEl.querySelectorAll('.mbc-calendar-day').forEach(day => {
+				day.classList.remove('is-selected');
+			});
+		}
+		
+		// Clear availability cache
+		availabilityCache = {};
+		
+		// Scroll to top
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
 	// Initialize
 	document.addEventListener('DOMContentLoaded', () => {
 		try {
 			initServiceSelection();
+
+			// New Appointment button handler
+			const newAppointmentBtn = document.getElementById('mbc-new-appointment-btn');
+			if (newAppointmentBtn) {
+				newAppointmentBtn.addEventListener('click', startNewAppointment);
+			}
 
 			// Month navigation
 			if (calendarEl) {

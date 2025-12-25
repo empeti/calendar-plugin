@@ -61,5 +61,20 @@
 		<button type="submit" class="button"><?php esc_html_e( 'Submit', 'mpeti-booking-calendar' ); ?></button>
 		<div class="mbc-form-message" style="display:none;"></div>
 	</form>
+
+	<!-- Success Message (shown after successful booking) -->
+	<div class="mbc-booking-success" id="mbc-booking-success" style="display: none;">
+		<div class="mbc-success-icon">✓</div>
+		<h3><?php esc_html_e( 'Thank You!', 'mpeti-booking-calendar' ); ?></h3>
+		<p class="mbc-success-message">
+			<?php esc_html_e( 'Your appointment request has been submitted successfully.', 'mpeti-booking-calendar' ); ?>
+		</p>
+		<p class="mbc-success-details">
+			<?php esc_html_e( 'We will review your request and send you a confirmation email shortly.', 'mpeti-booking-calendar' ); ?>
+		</p>
+		<button type="button" class="button button-primary mbc-new-appointment-btn" id="mbc-new-appointment-btn">
+			<?php esc_html_e( 'Book Another Appointment', 'mpeti-booking-calendar' ); ?>
+		</button>
+	</div>
 </div>
 

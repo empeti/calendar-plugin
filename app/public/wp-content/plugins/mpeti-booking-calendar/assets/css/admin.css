@@ -1295,16 +1295,24 @@
 	font-size: 14px;
 	line-height: 1.6;
 	color: #1d2327;
+	display: grid;
+	grid-template-columns: 120px 1fr;
+	gap: 12px;
+	align-items: start;
 }
 
 .mbc-appointment-modal-field strong {
 	color: #646970;
-	margin-right: 8px;
-	font-weight: 600;
+	font-weight: 700;
+	font-size: 14px;
+}
+
+.mbc-appointment-modal-value {
+	color: #1d2327;
 }
 
 .mbc-appointment-modal-notes {
-	margin-top: 4px;
+	margin-top: 0;
 	padding: 12px;
 	background: #f8f9fa;
 	border-radius: 4px;
@@ -1312,6 +1320,7 @@
 	font-size: 13px;
 	line-height: 1.5;
 	color: #1d2327;
+	grid-column: 2;
 }
 
 .mbc-appointment-modal-actions {
@@ -1333,11 +1342,29 @@
 	cursor: pointer;
 	transition: all 0.2s ease;
 	text-transform: capitalize;
+	text-decoration: none;
+	display: inline-block;
+	text-align: center;
 }
 
 .mbc-appointment-modal-btn:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
+}
+
+.mbc-appointment-modal-edit {
+	background: #0073aa;
+	color: #fff !important;
+}
+
+.mbc-appointment-modal-edit:hover,
+.mbc-appointment-modal-edit:focus,
+.mbc-appointment-modal-edit:active,
+.mbc-appointment-modal-edit:visited {
+	background: #005a87;
+	color: #fff !important;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 115, 170, 0.3);
 }
 
 .mbc-appointment-modal-confirm {
@@ -1652,6 +1679,12 @@
 	}
 
 	.mbc-appointment-modal-field {
+		font-size: 13px;
+		grid-template-columns: 100px 1fr;
+		gap: 10px;
+	}
+
+	.mbc-appointment-modal-field strong {
 		font-size: 13px;
 	}
 

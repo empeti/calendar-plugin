@@ -474,6 +474,7 @@ class Rest {
 				'service_duration' => $service_duration,
 				'staff_color'   => $staff_id ? \get_post_meta( $staff_id, 'staff_color', true ) : '',
 				'service_color' => $service_id ? \get_post_meta( $service_id, 'service_color', true ) : '',
+				'notes'    => \get_post_meta( $post_id, 'notes', true ),
 			);
 		}
 

@@ -202,44 +202,49 @@
 						),
 						el('div', { className: 'mbc-appointment-modal-details' },
 							el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Customer: '),
-								apt.customer || 'N/A'
+								el('strong', null, 'Customer:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, apt.customer || 'N/A')
 							),
 							el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Email: '),
-								apt.customer_email || 'N/A'
+								el('strong', null, 'Email:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, apt.customer_email || 'N/A')
 							),
 							apt.customer_phone ? el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Phone: '),
-								apt.customer_phone
+								el('strong', null, 'Phone:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, apt.customer_phone)
 							) : null,
 							el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Date: '),
-								formatDate(apt.date)
+								el('strong', null, 'Date:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, formatDate(apt.date))
 							),
 							el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Time: '),
-								formatTime(apt.time) + ' - ' + formatTime(endTime)
+								el('strong', null, 'Time:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, formatTime(apt.time) + ' - ' + formatTime(endTime))
 							),
 							el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Service: '),
-								serviceName
+								el('strong', null, 'Service:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, serviceName)
 							),
 							apt.staff_name ? el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Staff: '),
-								apt.staff_name
+								el('strong', null, 'Staff:'),
+								el('span', { className: 'mbc-appointment-modal-value' }, apt.staff_name)
 							) : null,
 							el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Status: '),
-								el('span', { className: `mbc-status-${status}` }, status)
+								el('strong', null, 'Status:'),
+								el('span', { className: `mbc-appointment-modal-value mbc-status-${status}` }, status)
 							),
-							apt.notes ? el('div', { className: 'mbc-appointment-modal-field' },
-								el('strong', null, 'Notes: '),
-								el('div', { className: 'mbc-appointment-modal-notes' }, apt.notes)
-							) : null
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Notes:'),
+								el('div', { className: 'mbc-appointment-modal-notes' }, apt.notes || 'No notes')
+							)
 						)
 					),
 					el('div', { className: 'mbc-appointment-modal-actions' },
+						el('a', {
+							href: `${window.location.origin}/wp-admin/post.php?post=${apt.id}&action=edit`,
+							className: 'mbc-appointment-modal-btn mbc-appointment-modal-edit',
+							target: '_self'
+						}, 'Edit Appointment'),
 						status !== 'confirmed' ? el('button', {
 							className: 'mbc-appointment-modal-btn mbc-appointment-modal-confirm',
 							onClick: () => updateAppointmentStatus(apt.id, 'confirmed'),

@@ -79,7 +79,7 @@
 .mbc-search-actions {
 	display: flex;
 	gap: 8px;
-	align-items: center;
+	align-items: flex-end;
 }
 
 .mbc-search-label {
@@ -98,6 +98,9 @@
 	width: 100%;
 	box-sizing: border-box;
 	cursor: pointer;
+	height: 36px;
+	line-height: 1.5;
+	vertical-align: middle;
 }
 
 .mbc-search-input[type="date"] {
@@ -119,7 +122,7 @@
 .mbc-search-clear-date {
 	position: absolute;
 	right: 8px;
-	top: 28px;
+	top: 34px;
 	background: #f0f0f1;
 	border: none;
 	border-radius: 50%;
@@ -146,6 +149,8 @@
 	border: 1px solid #2271b1;
 	border-radius: 4px;
 	color: #fff;
+	height: 36px;
+	box-sizing: border-box;
 	font-size: 13px;
 	font-weight: 500;
 	cursor: pointer;
@@ -164,6 +169,8 @@
 	border: 1px solid #c3c4c7;
 	border-radius: 4px;
 	color: #1d2327;
+	height: 36px;
+	box-sizing: border-box;
 	font-size: 13px;
 	cursor: pointer;
 	transition: background 0.2s, border-color 0.2s;
@@ -658,156 +665,227 @@
 /* View Toggle */
 .mbc-view-toggle {
 	display: flex;
-	gap: 8px;
+	gap: 6px;
 	margin-bottom: 16px;
-	padding: 8px;
-	background: #fff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
+	justify-content: flex-end;
+	align-items: center;
 }
 
 .mbc-view-toggle-btn {
-	padding: 8px 16px;
-	background: #f0f0f1;
-	border: 1px solid #c3c4c7;
+	padding: 6px 8px;
+	background: transparent;
+	border: none;
 	border-radius: 4px;
-	color: #2c3338;
-	font-size: 13px;
+	color: #646970;
+	font-size: 20px;
 	cursor: pointer;
-	transition: all 0.2s;
-	font-weight: 500;
+	transition: all 0.2s ease;
+	line-height: 1;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.mbc-view-toggle-btn .dashicons {
+	width: 20px;
+	height: 20px;
+	font-size: 20px;
 }
 
 .mbc-view-toggle-btn:hover {
-	background: #dcdcde;
-	border-color: #8c8f94;
+	background: #f0f0f1;
+	color: #2c3338;
 }
 
 .mbc-view-toggle-btn.is-active {
-	background: #2271b1;
-	border-color: #2271b1;
-	color: #fff;
+	background: transparent;
+	color: #2271b1;
+}
+
+.mbc-view-toggle-btn.is-active:hover {
+	background: #f0f7ff;
+	color: #135e96;
 }
 
 /* Calendar View */
 .mbc-admin-calendar-view {
 	background: #fff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	padding: 16px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	padding: 0;
+	overflow-x: auto;
+	overflow-y: visible;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .mbc-calendar-week-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 20px;
-	padding-bottom: 16px;
-	border-bottom: 2px solid #e0e0e0;
+	margin-bottom: 0;
+	padding: 20px 24px;
+	border-bottom: 2px solid #e8e8e8;
+	background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
 }
 
 .mbc-week-range {
 	margin: 0;
-	font-size: 18px;
-	font-weight: 600;
+	font-size: 20px;
+	font-weight: 700;
 	color: #1d2327;
+	letter-spacing: -0.3px;
 }
 
 .mbc-week-nav-button {
-	padding: 8px 16px;
-	background: #f0f0f1;
-	border: 1px solid #c3c4c7;
-	border-radius: 4px;
+	padding: 10px 18px;
+	background: #fff;
+	border: 1px solid #d0d0d0;
+	border-radius: 6px;
 	color: #2c3338;
 	font-size: 13px;
+	font-weight: 600;
 	cursor: pointer;
-	transition: all 0.2s;
+	transition: all 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .mbc-week-nav-button:hover {
-	background: #dcdcde;
+	background: #f5f5f5;
 	border-color: #8c8f94;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+	transform: translateY(-1px);
 }
 
 .mbc-today-button {
-	background: #2271b1;
+	background: linear-gradient(135deg, #2271b1 0%, #1e5a8a 100%);
 	border-color: #2271b1;
 	color: #fff;
+	box-shadow: 0 2px 4px rgba(34, 113, 177, 0.3);
 }
 
 .mbc-today-button:hover {
-	background: #135e96;
+	background: linear-gradient(135deg, #135e96 0%, #154a70 100%);
 	border-color: #135e96;
+	box-shadow: 0 3px 6px rgba(34, 113, 177, 0.4);
+	transform: translateY(-1px);
 }
 
 .mbc-calendar-week-container {
 	display: flex;
 	gap: 12px;
 	overflow-x: auto;
+	padding: 20px;
 }
 
 .mbc-calendar-time-column {
 	flex-shrink: 0;
 	width: 80px;
+	background: linear-gradient(to right, #fafafa 0%, #f5f5f5 100%);
+	border-right: 2px solid #e8e8e8;
 }
 
 .mbc-calendar-time-header {
 	height: 60px;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 2px solid #e8e8e8;
+	background: linear-gradient(to bottom, #f0f0f0 0%, #e8e8e8 100%);
 }
 
 .mbc-calendar-time-slot {
-	height: 50px;
+	height: 90px; /* Match minimum box height to align properly */
 	border-bottom: 1px solid #f0f0f0;
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	padding-right: 8px;
+	padding-right: 10px;
 	font-size: 11px;
+	font-weight: 500;
 	color: #646970;
 }
 
 .mbc-calendar-week-grid {
 	display: grid;
-	grid-template-columns: repeat(7, 1fr);
+	grid-template-columns: repeat(7, minmax(312px, 312px));
 	gap: 12px;
 	flex: 1;
+	width: max-content;
+	min-width: 100%;
+	overflow-x: visible;
 }
 
 .mbc-calendar-day-column {
 	border: 1px solid #e0e0e0;
-	border-radius: 4px;
+	border-radius: 6px;
 	background: #fafafa;
 	display: flex;
 	flex-direction: column;
 	position: relative;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	transition: all 0.2s ease;
+	width: 312px; /* Fixed width for all columns: 2×150px + 4px gap + 8px padding */
+	min-width: 312px;
+	max-width: 312px;
+	overflow: visible;
+	flex-shrink: 0;
 }
 
 .mbc-calendar-day-column.is-today {
 	border-color: #2271b1;
 	border-width: 2px;
-	background: #f0f7ff;
+	background: linear-gradient(to bottom, #f0f7ff 0%, #e8f4ff 100%);
+	box-shadow: 0 3px 8px rgba(34, 113, 177, 0.15);
 }
 
 .mbc-calendar-day-header {
-	padding: 12px;
-	background: #fff;
-	border-bottom: 1px solid #e0e0e0;
-	border-radius: 4px 4px 0 0;
+	padding: 14px 12px;
+	background: linear-gradient(to bottom, #fff 0%, #f8f8f8 100%);
+	border-bottom: 2px solid #e8e8e8;
+	border-radius: 6px 6px 0 0;
 	text-align: center;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.mbc-calendar-day-header-clickable {
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.2s ease;
+}
+
+.mbc-calendar-day-header-clickable:hover {
+	background: linear-gradient(to bottom, #f5f5f5 0%, #eeeeee 100%);
+}
+
+.mbc-calendar-day-header-left {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 1;
+}
+
+.mbc-calendar-day-header-right {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: 12px;
 }
 
 .mbc-calendar-day-column.is-today .mbc-calendar-day-header {
-	background: #2271b1;
+	background: linear-gradient(135deg, #2271b1 0%, #1e5a8a 100%);
 	color: #fff;
+	border-bottom-color: #1e5a8a;
 }
 
 .mbc-calendar-day-name {
-	font-size: 12px;
-	font-weight: 600;
+	font-size: 11px;
+	font-weight: 700;
 	text-transform: uppercase;
 	color: #646970;
-	margin-bottom: 4px;
+	margin-bottom: 6px;
+	letter-spacing: 0.5px;
 }
 
 .mbc-calendar-day-column.is-today .mbc-calendar-day-name {
@@ -815,9 +893,10 @@
 }
 
 .mbc-calendar-day-date {
-	font-size: 16px;
-	font-weight: 600;
+	font-size: 18px;
+	font-weight: 700;
 	color: #1d2327;
+	letter-spacing: -0.5px;
 }
 
 .mbc-calendar-day-column.is-today .mbc-calendar-day-date {
@@ -825,14 +904,46 @@
 }
 
 .mbc-calendar-day-time-grid {
-	flex: 1;
+	flex: 0 1 auto;
 	position: relative;
-	min-height: 1200px; /* 24 time slots * 50px */
+	min-height: 2160px; /* 24 time slots * 90px */
+	overflow: visible;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	min-width: 200px;
+}
+
+.mbc-calendar-day-time-grid::before {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 0;
+	pointer-events: none;
 }
 
 .mbc-calendar-time-row {
-	height: 50px;
+	height: 90px; /* Match minimum box height to align properly */
 	border-bottom: 1px solid #f0f0f0;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	display: flex;
+	align-items: flex-start;
+}
+
+.mbc-calendar-time-row::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(to right, transparent 0%, #e8e8e8 10%, #e8e8e8 90%, transparent 100%);
 }
 
 .mbc-calendar-day-appointments {
@@ -842,6 +953,20 @@
 	right: 0;
 	bottom: 0;
 	pointer-events: none;
+	z-index: 5;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	overflow: visible;
+}
+
+.mbc-calendar-appointment-group {
+	position: absolute;
+	overflow: visible;
+	pointer-events: all;
+	width: calc(100% - 8px);
+	max-width: calc(100% - 8px);
+	box-sizing: border-box;
 }
 
 .mbc-calendar-no-appointments {
@@ -853,26 +978,44 @@
 }
 
 .mbc-calendar-appointment-item {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	border-left: 3px solid #4caf50;
-	border-radius: 4px;
-	padding: 6px;
-	margin-bottom: 2px;
-	transition: all 0.2s;
+	background: linear-gradient(to right, #fff 0%, #fafafa 100%);
+	border: 1px solid #d0d0d0;
+	border-left: 4px solid #4caf50; /* Default green for confirmed */
+	border-radius: 6px;
+	padding: 8px;
+	margin: 0;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	cursor: pointer;
 	overflow: hidden;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 	box-sizing: border-box;
 	pointer-events: all;
 	z-index: 10;
-	min-height: 50px;
+	min-height: 90px; /* Increased to fit all information: time, customer, service, staff, status */
+	min-width: 150px;
+	position: relative;
+	height: 100%;
+}
+
+/* Status-based left border colors */
+.mbc-calendar-appointment-item.mbc-status-pending {
+	border-left-color: #ffc107; /* Yellow/amber for pending */
+}
+
+.mbc-calendar-appointment-item.mbc-status-confirmed {
+	border-left-color: #4caf50; /* Green for confirmed */
+}
+
+.mbc-calendar-appointment-item.mbc-status-cancelled {
+	border-left-color: #f44336; /* Red for cancelled */
 }
 
 .mbc-calendar-appointment-item:hover {
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	border-left-color: #2271b1;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-color: #b0b0b0;
+	transform: translateY(-2px);
 	z-index: 20;
+	background: linear-gradient(to right, #fff 0%, #f8f8f8 100%);
 }
 
 .mbc-calendar-appointment-content {
@@ -897,6 +1040,8 @@
 	flex-direction: column;
 	min-width: 0;
 	overflow: hidden;
+	justify-content: space-between;
+	height: 100%;
 }
 
 .mbc-calendar-appointment-time {
@@ -911,11 +1056,12 @@
 .mbc-calendar-appointment-details {
 	flex: 1;
 	overflow: visible;
-	margin-bottom: 4px;
+	margin-bottom: 0;
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
 	min-width: 0;
+	min-height: 0;
 }
 
 .mbc-calendar-appointment-customer {
@@ -955,13 +1101,13 @@
 }
 
 .mbc-calendar-appointment-staff-icon {
-	width: 32px;
-	height: 32px;
+	width: 36px;
+	height: 36px;
 	border-radius: 50%;
 	object-fit: cover;
 	flex-shrink: 0;
-	border: 2px solid #fff;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	border: 3px solid #fff;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .mbc-calendar-appointment-staff-name {
@@ -972,13 +1118,34 @@
 
 .mbc-calendar-appointment-status {
 	font-size: 9px;
-	padding: 2px 5px;
-	border-radius: 2px;
+	padding: 3px 8px;
+	border-radius: 12px;
 	display: inline-block;
 	text-transform: capitalize;
 	white-space: nowrap;
 	line-height: 1.2;
-	margin-top: 2px;
+	margin-top: 8px;
+	font-weight: 600;
+	letter-spacing: 0.3px;
+	flex-shrink: 0;
+}
+
+.mbc-calendar-appointment-status.mbc-status-pending {
+	background: #fff3cd;
+	color: #856404;
+	border: 1px solid #ffeaa7;
+}
+
+.mbc-calendar-appointment-status.mbc-status-confirmed {
+	background: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
+}
+
+.mbc-calendar-appointment-status.mbc-status-cancelled {
+	background: #f8d7da;
+	color: #721c24;
+	border: 1px solid #f5c6cb;
 }
 
 .mbc-calendar-appointment-actions {
@@ -991,30 +1158,618 @@
 
 .mbc-calendar-confirm-btn,
 .mbc-calendar-edit-btn {
-	padding: 4px 8px;
+	padding: 5px 10px;
 	background: #f0f0f1;
 	border: 1px solid #c3c4c7;
-	border-radius: 3px;
-	font-size: 12px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
 	cursor: pointer;
 	text-decoration: none;
 	color: #2c3338;
-	transition: all 0.2s;
-	line-height: 1;
+	transition: all 0.2s ease;
+	line-height: 1.2;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .mbc-calendar-confirm-btn {
-	background: #4caf50;
+	background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
 	border-color: #4caf50;
 	color: #fff;
+	box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
 }
 
 .mbc-calendar-confirm-btn:hover {
-	background: #45a049;
+	background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
 	border-color: #45a049;
+	box-shadow: 0 3px 6px rgba(76, 175, 80, 0.4);
+	transform: translateY(-1px);
 }
 
 .mbc-calendar-edit-btn:hover {
-	background: #dcdcde;
+	background: #e8e8e8;
 	border-color: #8c8f94;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	transform: translateY(-1px);
+}
+
+/* Appointment Modal Styles */
+.mbc-appointment-modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 999999;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.mbc-appointment-modal {
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+	max-width: 600px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+}
+
+.mbc-appointment-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 24px;
+	border-bottom: 1px solid #e0e0e0;
+	background: #f8f9fa;
+	border-radius: 8px 8px 0 0;
+}
+
+.mbc-appointment-modal-header h2 {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.mbc-appointment-modal-close {
+	background: none;
+	border: none;
+	font-size: 28px;
+	line-height: 1;
+	color: #646970;
+	cursor: pointer;
+	padding: 0;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+
+.mbc-appointment-modal-close:hover {
+	background: #e0e0e0;
+	color: #1d2327;
+}
+
+.mbc-appointment-modal-close:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.mbc-appointment-modal-content {
+	padding: 24px;
+	display: flex;
+	gap: 20px;
+}
+
+.mbc-appointment-modal-avatar {
+	flex-shrink: 0;
+}
+
+.mbc-appointment-modal-avatar img {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid #e0e0e0;
+}
+
+.mbc-appointment-modal-details {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.mbc-appointment-modal-field {
+	font-size: 14px;
+	line-height: 1.6;
+	color: #1d2327;
+}
+
+.mbc-appointment-modal-field strong {
+	color: #646970;
+	margin-right: 8px;
+	font-weight: 600;
+}
+
+.mbc-appointment-modal-notes {
+	margin-top: 4px;
+	padding: 12px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border-left: 3px solid #2271b1;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #1d2327;
+}
+
+.mbc-appointment-modal-actions {
+	padding: 20px 24px;
+	border-top: 1px solid #e0e0e0;
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+	background: #fafafa;
+	border-radius: 0 0 8px 8px;
+}
+
+.mbc-appointment-modal-btn {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 4px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-transform: capitalize;
+}
+
+.mbc-appointment-modal-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.mbc-appointment-modal-confirm {
+	background: #4caf50;
+	color: #fff;
+}
+
+.mbc-appointment-modal-confirm:hover:not(:disabled) {
+	background: #45a049;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.mbc-appointment-modal-cancel {
+	background: #f44336;
+	color: #fff;
+}
+
+.mbc-appointment-modal-cancel:hover:not(:disabled) {
+	background: #da190b;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+/* Mobile Responsive Styles */
+@media screen and (max-width: 768px) {
+	/* Calendar container adjustments */
+	.mbc-admin-calendar-view {
+		overflow-x: visible;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.mbc-calendar-week-container {
+		padding: 10px;
+		gap: 8px;
+		overflow-x: visible;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		flex-direction: column;
+	}
+
+	/* Time column - hide on mobile or make smaller */
+	.mbc-calendar-time-column {
+		display: none;
+	}
+
+	/* Week grid - stack vertically on mobile */
+	.mbc-calendar-week-grid {
+		grid-template-columns: 1fr;
+		gap: 12px;
+		width: 100%;
+		min-width: 100%;
+	}
+
+	/* Day columns - full width on mobile */
+	.mbc-calendar-day-column {
+		width: 100%;
+		min-width: 100%;
+		max-width: 100%;
+	}
+
+	/* Day header - smaller padding and collapsible */
+	.mbc-calendar-day-header {
+		padding: 12px 16px;
+		justify-content: space-between;
+		text-align: left;
+	}
+
+	.mbc-calendar-day-header-left {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 12px;
+		flex: 1;
+	}
+
+	.mbc-calendar-day-header-text {
+		display: flex;
+		align-items: baseline;
+		gap: 4px;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: #646970;
+		line-height: 1.2;
+	}
+
+	.mbc-calendar-day-header-text .mbc-calendar-day-date,
+	.mbc-calendar-day-header-text .mbc-calendar-day-name {
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		color: inherit;
+		line-height: 1.2;
+		vertical-align: baseline;
+	}
+
+	.mbc-calendar-day-column.is-today .mbc-calendar-day-header-text {
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.mbc-calendar-day-header-right {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.mbc-calendar-day-appointment-count {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 24px;
+		height: 24px;
+		padding: 0 8px;
+		background: #2271b1;
+		color: #fff;
+		border-radius: 12px;
+		font-size: 12px;
+		font-weight: 600;
+		line-height: 1;
+	}
+
+	.mbc-calendar-day-column.is-today .mbc-calendar-day-appointment-count {
+		background: #fff;
+		color: #2271b1;
+	}
+
+	.mbc-calendar-day-toggle {
+		display: inline-block;
+		font-size: 12px;
+		color: #646970;
+		transition: transform 0.2s ease, color 0.2s;
+		width: 20px;
+		text-align: center;
+	}
+
+	.mbc-calendar-day-toggle.is-expanded {
+		transform: rotate(0deg);
+	}
+
+	.mbc-calendar-day-column.is-collapsed .mbc-calendar-day-time-grid {
+		display: none;
+	}
+
+	.mbc-calendar-day-name {
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	.mbc-calendar-day-date {
+		font-size: 18px;
+		font-weight: 700;
+	}
+
+	/* Time rows - smaller height on mobile */
+	.mbc-calendar-time-row {
+		height: 80px;
+		padding-left: 50px;
+		position: relative;
+	}
+
+	.mbc-calendar-time-row-label {
+		position: absolute;
+		left: 8px;
+		top: 4px;
+		font-size: 10px;
+		font-weight: 600;
+		color: #646970;
+		white-space: nowrap;
+	}
+
+	.mbc-calendar-time-slot {
+		height: 80px;
+		font-size: 11px;
+	}
+
+	/* Appointment boxes - smaller on mobile */
+	.mbc-calendar-appointment-item {
+		min-height: 80px;
+		padding: 6px;
+	}
+
+	.mbc-calendar-appointment-avatar img {
+		width: 28px;
+		height: 28px;
+	}
+
+	.mbc-calendar-appointment-time {
+		font-size: 9px;
+		margin-bottom: 2px;
+	}
+
+	.mbc-calendar-appointment-customer {
+		font-size: 10px;
+		margin-bottom: 1px;
+	}
+
+	.mbc-calendar-appointment-service {
+		font-size: 9px;
+		margin-bottom: 1px;
+	}
+
+	.mbc-calendar-appointment-staff {
+		font-size: 9px;
+	}
+
+	.mbc-calendar-appointment-status {
+		font-size: 8px;
+		padding: 2px 6px;
+		margin-top: 4px;
+	}
+
+	/* Time grid - adjust min-height for mobile */
+	.mbc-calendar-day-time-grid {
+		min-height: 1920px; /* 24 time slots * 80px */
+	}
+
+	/* Week header - stack buttons on mobile */
+	.mbc-calendar-week-header {
+		flex-wrap: wrap;
+		gap: 8px;
+		padding: 12px;
+	}
+
+	.mbc-week-nav-button,
+	.mbc-today-button {
+		padding: 8px 12px;
+		font-size: 12px;
+	}
+
+	.mbc-week-range {
+		font-size: 14px;
+		width: 100%;
+		text-align: center;
+		order: -1;
+	}
+
+	/* Search and filter forms - stack on mobile */
+	.mbc-search-fields-row {
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.mbc-search-field-group {
+		width: 100%;
+	}
+
+	.mbc-search-actions {
+		width: 100%;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.mbc-search-button,
+	.mbc-search-clear-all {
+		width: 100%;
+	}
+
+	.mbc-admin-filters {
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.mbc-filter-group {
+		width: 100%;
+	}
+
+	.mbc-filter-buttons {
+		flex-wrap: wrap;
+	}
+
+	/* Modal - full screen on mobile */
+	.mbc-appointment-modal-overlay {
+		padding: 0;
+		align-items: flex-end;
+	}
+
+	.mbc-appointment-modal {
+		max-width: 100%;
+		max-height: 90vh;
+		border-radius: 16px 16px 0 0;
+		margin: 0;
+	}
+
+	.mbc-appointment-modal-header {
+		padding: 16px 20px;
+	}
+
+	.mbc-appointment-modal-header h2 {
+		font-size: 18px;
+	}
+
+	.mbc-appointment-modal-content {
+		padding: 20px;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.mbc-appointment-modal-avatar {
+		align-self: center;
+	}
+
+	.mbc-appointment-modal-avatar img {
+		width: 80px;
+		height: 80px;
+	}
+
+	.mbc-appointment-modal-details {
+		gap: 10px;
+	}
+
+	.mbc-appointment-modal-field {
+		font-size: 13px;
+	}
+
+	.mbc-appointment-modal-actions {
+		padding: 16px 20px;
+		flex-direction: column;
+	}
+
+	.mbc-appointment-modal-btn {
+		width: 100%;
+		padding: 12px 20px;
+		font-size: 15px;
+	}
+
+	/* View toggle buttons - adjust for mobile */
+	.mbc-view-toggle {
+		padding: 8px;
+	}
+
+	.mbc-view-toggle-btn {
+		width: 36px;
+		height: 36px;
+	}
+
+	/* List view adjustments */
+	.mbc-admin-appointments-container {
+		padding: 8px;
+	}
+
+	.mbc-admin-staff-group {
+		margin-bottom: 16px;
+	}
+
+	.mbc-admin-staff-header {
+		padding: 10px;
+		font-size: 14px;
+	}
+
+	.mbc-admin-appointment-item {
+		padding: 10px;
+		font-size: 13px;
+	}
+}
+
+/* Tablet adjustments */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+	.mbc-calendar-week-grid {
+		grid-template-columns: repeat(7, minmax(250px, 250px));
+		gap: 10px;
+	}
+
+	.mbc-calendar-day-column {
+		width: 250px;
+		min-width: 250px;
+		max-width: 250px;
+	}
+
+	.mbc-calendar-appointment-item {
+		min-height: 85px;
+		padding: 7px;
+	}
+
+	.mbc-appointment-modal {
+		max-width: 90%;
+	}
+}
+
+/* Very small mobile devices */
+@media screen and (max-width: 480px) {
+	.mbc-calendar-week-grid {
+		grid-template-columns: 1fr;
+		gap: 10px;
+		width: 100%;
+	}
+
+	.mbc-calendar-day-column {
+		width: 100%;
+		min-width: 100%;
+		max-width: 100%;
+	}
+
+	.mbc-calendar-day-header {
+		padding: 8px 6px;
+	}
+
+	.mbc-calendar-day-name {
+		font-size: 9px;
+	}
+
+	.mbc-calendar-day-date {
+		font-size: 14px;
+	}
+
+	.mbc-calendar-appointment-item {
+		min-height: 75px;
+		padding: 5px;
+	}
+
+	.mbc-calendar-appointment-time {
+		font-size: 8px;
+	}
+
+	.mbc-calendar-appointment-customer {
+		font-size: 9px;
+	}
+
+	.mbc-calendar-appointment-service {
+		font-size: 8px;
+	}
+
+	.mbc-calendar-appointment-status {
+		font-size: 7px;
+		padding: 2px 4px;
+	}
+
+	.mbc-week-nav-button,
+	.mbc-today-button {
+		padding: 6px 10px;
+		font-size: 11px;
+	}
 }

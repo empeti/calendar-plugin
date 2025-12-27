@@ -1,5 +1,5 @@
 (function( wp, MBCAdmin ) {
-	const { createElement: el, useState, useEffect } = wp.element;
+	const { createElement: el, useState, useEffect, useMemo } = wp.element;
 	const { render } = wp.element;
 	const { SelectControl, Spinner } = wp.components;
 	const apiFetch = wp.apiFetch;
@@ -23,6 +23,8 @@
 		const [appointments, setAppointments] = useState([]);
 		const [loading, setLoading] = useState(false);
 		const [filters, setFilters] = useState({ staff: [], service: [], status: [] });
+		const [selectedAppointment, setSelectedAppointment] = useState(null);
+		const [updatingStatus, setUpdatingStatus] = useState(false);
 		const [staffOptions, setStaffOptions] = useState([]);
 		const [serviceOptions, setServiceOptions] = useState([]);
 		const [expandedStaffGroups, setExpandedStaffGroups] = useState({});
@@ -31,6 +33,7 @@
 		const [searchExpanded, setSearchExpanded] = useState(false);
 		const [filtersExpanded, setFiltersExpanded] = useState(false);
 		const [viewMode, setViewMode] = useState('calendar'); // 'list' or 'calendar'
+		const [expandedDays, setExpandedDays] = useState({}); // Track which days are expanded on mobile
 		const [currentWeekStart, setCurrentWeekStart] = useState(() => {
 			// Get Monday of current week
 			const today = new Date();
@@ -131,6 +134,134 @@
 					setAppointments([]);
 				})
 				.finally(() => setLoading(false));
+		}
+
+		// Update appointment status
+		function updateAppointmentStatus(appointmentId, newStatus) {
+			setUpdatingStatus(true);
+			apiFetch({
+				path: `/mpeti-booking-calendar/v1/appointments/${appointmentId}/status`,
+				method: 'POST',
+				headers: { 'X-WP-Nonce': MBCAdmin.nonce },
+				data: { status: newStatus }
+			})
+				.then((response) => {
+					if (response && response.success) {
+						// Reload appointments to reflect the change
+						loadAppointments();
+						setSelectedAppointment(null);
+					} else {
+						alert('Failed to update appointment status');
+					}
+				})
+				.catch((error) => {
+					console.error('Error updating appointment status:', error);
+					alert('Error updating appointment status');
+				})
+				.finally(() => setUpdatingStatus(false));
+		}
+
+		// Render appointment modal
+		function renderAppointmentModal() {
+			if (!selectedAppointment) return null;
+
+			try {
+				const apt = selectedAppointment;
+				const status = apt.status || 'pending';
+				const duration = apt.service_duration || 60;
+				const endTime = calculateEndTime(apt.time || '08:00', duration);
+			const serviceName = apt.service_name || (apt.service ? 'Service #' + apt.service : 'No Service');
+			const defaultAvatar = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#e0e0e0"/><circle cx="32" cy="24" r="12" fill="#999"/><path d="M32 40c-8 0-16 4-16 8v4h32v-4c0-4-8-8-16-8z" fill="#999"/></svg>');
+			const staffPhoto = apt.staff_photo || defaultAvatar;
+
+			return el(
+				'div',
+				{ 
+					className: 'mbc-appointment-modal-overlay',
+					onClick: () => !updatingStatus && setSelectedAppointment(null)
+				},
+				el('div', 
+					{ 
+						className: 'mbc-appointment-modal',
+						onClick: (e) => e.stopPropagation()
+					},
+					el('div', { className: 'mbc-appointment-modal-header' },
+						el('h2', null, 'Appointment Details'),
+						el('button', {
+							className: 'mbc-appointment-modal-close',
+							onClick: () => !updatingStatus && setSelectedAppointment(null),
+							disabled: updatingStatus
+						}, '×')
+					),
+					el('div', { className: 'mbc-appointment-modal-content' },
+						el('div', { className: 'mbc-appointment-modal-avatar' },
+							el('img', { 
+								src: staffPhoto,
+								alt: apt.staff_name || 'Staff'
+							})
+						),
+						el('div', { className: 'mbc-appointment-modal-details' },
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Customer: '),
+								apt.customer || 'N/A'
+							),
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Email: '),
+								apt.customer_email || 'N/A'
+							),
+							apt.customer_phone ? el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Phone: '),
+								apt.customer_phone
+							) : null,
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Date: '),
+								formatDate(apt.date)
+							),
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Time: '),
+								formatTime(apt.time) + ' - ' + formatTime(endTime)
+							),
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Service: '),
+								serviceName
+							),
+							apt.staff_name ? el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Staff: '),
+								apt.staff_name
+							) : null,
+							el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Status: '),
+								el('span', { className: `mbc-status-${status}` }, status)
+							),
+							apt.notes ? el('div', { className: 'mbc-appointment-modal-field' },
+								el('strong', null, 'Notes: '),
+								el('div', { className: 'mbc-appointment-modal-notes' }, apt.notes)
+							) : null
+						)
+					),
+					el('div', { className: 'mbc-appointment-modal-actions' },
+						status !== 'confirmed' ? el('button', {
+							className: 'mbc-appointment-modal-btn mbc-appointment-modal-confirm',
+							onClick: () => updateAppointmentStatus(apt.id, 'confirmed'),
+							disabled: updatingStatus
+						}, updatingStatus ? 'Updating...' : 'Confirm Appointment') : null,
+						status !== 'cancelled' ? el('button', {
+							className: 'mbc-appointment-modal-btn mbc-appointment-modal-cancel',
+							onClick: () => updateAppointmentStatus(apt.id, 'cancelled'),
+							disabled: updatingStatus
+						}, updatingStatus ? 'Updating...' : 'Cancel Appointment') : null,
+						status === 'cancelled' ? el('button', {
+							className: 'mbc-appointment-modal-btn mbc-appointment-modal-confirm',
+							onClick: () => updateAppointmentStatus(apt.id, 'pending'),
+							disabled: updatingStatus
+						}, updatingStatus ? 'Updating...' : 'Reactivate Appointment') : null
+					)
+				)
+			);
+			} catch (error) {
+				console.error('Error rendering appointment modal:', error);
+				return null;
+			}
 		}
 
 		// Filter appointments based on search filters
@@ -476,12 +607,14 @@
 			const defaultAvatar = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#e0e0e0"/><circle cx="16" cy="12" r="6" fill="#999"/><path d="M16 20c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="#999"/></svg>');
 			const staffPhoto = apt.staff_photo || defaultAvatar;
 			
+			const status = apt.status || 'pending';
 			return el(
 				'div',
 				{ 
 					key: apt.id, 
-					className: 'mbc-calendar-appointment-item',
-					style: style
+					className: `mbc-calendar-appointment-item mbc-status-${status}`,
+					style: style,
+					onClick: () => setSelectedAppointment(apt)
 				},
 				el('div', { className: 'mbc-calendar-appointment-content' },
 					el('div', { className: 'mbc-calendar-appointment-avatar' },
@@ -500,29 +633,9 @@
 							el('div', { className: 'mbc-calendar-appointment-service' }, serviceName),
 							(apt.staff_name && apt.staff_name.trim()) ? el('div', { className: 'mbc-calendar-appointment-staff' },
 								el('span', { className: 'mbc-calendar-appointment-staff-name' }, apt.staff_name)
-							) : null,
-							el('div', { className: `mbc-calendar-appointment-status mbc-status-${apt.status}` }, apt.status || 'pending')
+							) : null
 						),
-						el('div', { className: 'mbc-calendar-appointment-actions' },
-							isPending ? el(
-								'button',
-								{
-									type: 'button',
-									className: 'mbc-calendar-confirm-btn',
-									onClick: () => confirmAppointment(apt.id),
-									title: wp.i18n.__('Confirm', 'mpeti-booking-calendar'),
-								},
-								'✓'
-							) : null,
-							el('a',
-								{
-									href: `${window.location.origin}/wp-admin/post.php?post=${apt.id}&action=edit`,
-									className: 'mbc-calendar-edit-btn',
-									title: wp.i18n.__('Edit', 'mpeti-booking-calendar'),
-								},
-								'✎'
-							)
-						)
+						el('div', { className: `mbc-calendar-appointment-status mbc-status-${apt.status}` }, apt.status || 'pending')
 					)
 				)
 			);
@@ -538,28 +651,185 @@
 			return slots;
 		}
 
-		// Calculate appointment position and height
-		function getAppointmentStyle(apt) {
-			const [startHour, startMin] = (apt.time || '08:00').split(':').map(Number);
+		// Check if two appointments overlap
+		function appointmentsOverlap(apt1, apt2) {
+			const timeToMinutes = (timeStr) => {
+				const [hour, min] = (timeStr || '08:00').split(':').map(Number);
+				return hour * 60 + min;
+			};
+			
+			const start1 = timeToMinutes(apt1.time);
+			const end1 = start1 + (apt1.service_duration || 60);
+			const start2 = timeToMinutes(apt2.time);
+			const end2 = start2 + (apt2.service_duration || 60);
+			
+			// Check if they overlap (one starts before the other ends)
+			return (start1 < end2 && start2 < end1);
+		}
+
+		// Group overlapping appointments
+		function groupOverlappingAppointments(appointments) {
+			const groups = [];
+			const processed = new Set();
+			
+			appointments.forEach((apt, index) => {
+				if (processed.has(index)) return;
+				
+				const group = [apt];
+				processed.add(index);
+				
+				// Find all appointments that overlap with any appointment in this group
+				let foundNew = true;
+				while (foundNew) {
+					foundNew = false;
+					appointments.forEach((otherApt, otherIndex) => {
+						if (processed.has(otherIndex)) return;
+						
+						// Check if this appointment overlaps with any in the current group
+						const overlaps = group.some(groupApt => appointmentsOverlap(groupApt, otherApt));
+						if (overlaps) {
+							group.push(otherApt);
+							processed.add(otherIndex);
+							foundNew = true;
+						}
+					});
+				}
+				
+				groups.push(group);
+			});
+			
+			return groups;
+		}
+
+		// Calculate appointment container position (for overlapping groups)
+		function getAppointmentContainerStyle(group) {
+			// Use the earliest start time in the group
+			const earliestApt = group.reduce((earliest, apt) => {
+				const currentTime = (apt.time || '08:00').split(':').map(Number);
+				const earliestTime = (earliest.time || '08:00').split(':').map(Number);
+				if (currentTime[0] < earliestTime[0] || (currentTime[0] === earliestTime[0] && currentTime[1] < earliestTime[1])) {
+					return apt;
+				}
+				return earliest;
+			}, group[0]);
+			
+			const [startHour, startMin] = (earliestApt.time || '08:00').split(':').map(Number);
 			const startMinutes = startHour * 60 + startMin;
-			const duration = apt.service_duration || 60; // Default to 60 minutes
 			
-			// Calculate position from top (8:00 AM = 0)
-			const startPosition = (startMinutes - (8 * 60)) / 30; // Position in half-hour slots
-			const height = duration / 30; // Height in half-hour slots
+			// Responsive slot height based on screen size
+			const isMobile = window.innerWidth <= 768;
+			const isSmallMobile = window.innerWidth <= 480;
+			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 70);
+			const PIXELS_PER_MINUTE = SLOT_HEIGHT / 30;
 			
-			// Each time slot is 50px (increased from 40px)
-			const top = startPosition * 50;
-			const heightPx = height * 50;
+			// Calculate position from top of time grid (8:00 AM = 0px)
+			const minutesFrom8AM = startMinutes - (8 * 60);
+			const top = minutesFrom8AM * PIXELS_PER_MINUTE;
 			
 			return {
 				position: 'absolute',
-				top: `${top}px`,
-				height: `${heightPx}px`,
-				width: 'calc(100% - 8px)',
+				top: `${Math.round(top)}px`,
 				left: '4px',
+				right: '4px',
+				display: 'flex',
+				flexDirection: 'row',
+				gap: group.length > 2 ? '0px' : '4px', // No gap if more than 2 boxes (they'll overlap)
+				alignItems: 'flex-start',
+				width: 'calc(100% - 8px)',
+				maxWidth: 'calc(100% - 8px)',
+				boxSizing: 'border-box',
 			};
 		}
+		
+		// Calculate individual appointment style (for boxes within a flex container)
+		function getAppointmentStyle(apt, overlapIndex, overlapCount) {
+			const [startHour, startMin] = (apt.time || '08:00').split(':').map(Number);
+			const startMinutes = startHour * 60 + startMin;
+			const duration = apt.service_duration || 60;
+			
+			// Responsive slot height based on screen size
+			const isMobile = window.innerWidth <= 768;
+			const isSmallMobile = window.innerWidth <= 480;
+			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 90);
+			const PIXELS_PER_MINUTE = SLOT_HEIGHT / 30;
+			
+			// Calculate height in pixels based on duration
+			const heightPx = duration * PIXELS_PER_MINUTE;
+			const minHeightPx = isSmallMobile ? 75 : (isMobile ? 80 : 90); // Minimum height to fit all information
+			
+			// If more than 2 boxes, make them overlap using negative margins
+			if (overlapCount > 2) {
+				const boxWidth = 150;
+				const columnWidth = 312; // Column width (fits 2 boxes max)
+				const padding = 8; // Total padding
+				const availableWidth = columnWidth - padding; // 304px
+				
+				// Calculate how much overlap is needed to fit all boxes
+				const totalBoxWidth = overlapCount * boxWidth;
+				const neededOverlap = totalBoxWidth - availableWidth;
+				const overlapAmount = Math.max(20, Math.ceil(neededOverlap / (overlapCount - 1))); // At least 20px overlap
+				
+				// Use negative margin to create overlap, except for the first box
+				const marginLeft = overlapIndex > 0 ? `-${overlapAmount}px` : '0px';
+				
+				return {
+					flex: '0 0 150px', // Fixed width
+					width: `${boxWidth}px`,
+					minWidth: `${boxWidth}px`,
+					maxWidth: `${boxWidth}px`,
+					marginLeft: marginLeft,
+					minHeight: `${minHeightPx}px`,
+					height: `${Math.max(minHeightPx, Math.round(heightPx))}px`,
+					boxSizing: 'border-box',
+					zIndex: 10 + overlapIndex, // Stack overlapping boxes
+					position: 'relative',
+				};
+			} else {
+				// Normal flex layout for 2 or fewer boxes (no overlap needed)
+				return {
+					flex: '0 0 150px', // Fixed width for 2 or fewer boxes
+					width: '150px',
+					minWidth: '150px',
+					maxWidth: '150px',
+					minHeight: `${minHeightPx}px`,
+					height: `${Math.max(minHeightPx, Math.round(heightPx))}px`,
+					boxSizing: 'border-box',
+				};
+			}
+		}
+
+		// Check if mobile view
+		function isMobileView() {
+			return window.innerWidth <= 768;
+		}
+
+		// Toggle day expansion
+		function toggleDayExpansion(dateStr) {
+			setExpandedDays(prev => ({
+				...prev,
+				[dateStr]: !prev[dateStr]
+			}));
+		}
+
+		// Initialize expanded days - today should be expanded by default on mobile
+		useEffect(() => {
+			if (isMobileView() && currentWeekStart) {
+				const today = new Date();
+				today.setHours(0, 0, 0, 0);
+				// Format date as YYYY-MM-DD (same format as formatDateLocal)
+				const year = today.getFullYear();
+				const month = String(today.getMonth() + 1).padStart(2, '0');
+				const day = String(today.getDate()).padStart(2, '0');
+				const todayStr = `${year}-${month}-${day}`;
+				setExpandedDays(prev => {
+					// Only set if not already initialized
+					if (Object.keys(prev).length === 0) {
+						return { [todayStr]: true };
+					}
+					return prev;
+				});
+			}
+		}, [currentWeekStart]);
 
 		// Render calendar view
 		function renderCalendarView() {
@@ -600,21 +870,6 @@
 							onClick: () => navigateWeek(1),
 						},
 						'Next Week →'
-					),
-					el('button',
-						{
-							type: 'button',
-							className: 'mbc-week-nav-button mbc-today-button',
-							onClick: () => {
-								const today = new Date();
-								const day = today.getDay();
-								const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-								const monday = new Date(today.setDate(diff));
-								monday.setHours(0, 0, 0, 0);
-								setCurrentWeekStart(monday);
-							},
-						},
-						'Today'
 					)
 				),
 				el(
@@ -640,26 +895,85 @@
 							today.setHours(0, 0, 0, 0);
 							const todayStr = formatDateLocal(today);
 							const isToday = dateStr === todayStr;
+							const appointmentCount = dayAppointments.length;
+							
+							// Check if mobile and if day is expanded
+							const mobile = isMobileView();
+							const isExpanded = mobile ? (expandedDays[dateStr] !== undefined ? expandedDays[dateStr] : isToday) : true;
+							
+							// Sort appointments by time
+							const sortedAppointments = [...dayAppointments].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+							
+							// Group overlapping appointments
+							const overlapGroups = groupOverlappingAppointments(sortedAppointments);
+							
+							// Fixed width for all columns: 2 boxes (300px) + 1 gap (4px) + padding (8px) = 312px
+							const fixedColumnWidth = 312;
 							
 							return el(
 								'div',
-								{ key: dateStr, className: `mbc-calendar-day-column ${isToday ? 'is-today' : ''}` },
-								el('div', { className: 'mbc-calendar-day-header' },
-									el('div', { className: 'mbc-calendar-day-name' }, weekDays[index]),
-									el('div', { className: 'mbc-calendar-day-date' }, 
-										date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-									)
+								{ 
+									key: dateStr, 
+									className: `mbc-calendar-day-column ${isToday ? 'is-today' : ''} ${mobile ? (isExpanded ? 'is-expanded' : 'is-collapsed') : ''}`,
+									style: { 
+										width: mobile ? '100%' : `${fixedColumnWidth}px`,
+										minWidth: mobile ? '100%' : `${fixedColumnWidth}px`,
+										maxWidth: mobile ? '100%' : `${fixedColumnWidth}px`,
+										flexShrink: 0
+									}
+								},
+								el('div', { 
+									className: `mbc-calendar-day-header ${mobile ? 'mbc-calendar-day-header-clickable' : ''}`,
+									onClick: mobile ? () => toggleDayExpansion(dateStr) : undefined
+								},
+									el('div', { className: 'mbc-calendar-day-header-left' },
+										mobile ? el('div', { className: 'mbc-calendar-day-header-text' },
+											el('span', { className: 'mbc-calendar-day-date' }, 
+												date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+											),
+											' - ',
+											el('span', { className: 'mbc-calendar-day-name' }, weekDays[index])
+										) : el('div', null,
+											el('div', { className: 'mbc-calendar-day-name' }, weekDays[index]),
+											el('div', { className: 'mbc-calendar-day-date' }, 
+												date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+											)
+										)
+									),
+									mobile ? el('div', { className: 'mbc-calendar-day-header-right' },
+										el('span', { className: 'mbc-calendar-day-appointment-count' }, appointmentCount),
+										el('span', { 
+											className: `mbc-calendar-day-toggle ${isExpanded ? 'is-expanded' : ''}` 
+										}, isExpanded ? '▼' : '▶')
+									) : null
 								),
-								el('div', { className: 'mbc-calendar-day-time-grid' },
+								isExpanded ? el('div', { className: 'mbc-calendar-day-time-grid' },
 									timeSlots.map(slot => 
-										el('div', { key: slot, className: 'mbc-calendar-time-row' })
+										el('div', { 
+											key: slot, 
+											className: 'mbc-calendar-time-row',
+											'data-time': slot
+										}, mobile ? el('span', { className: 'mbc-calendar-time-row-label' }, formatTime(slot)) : null)
+									),
+									el('div', { className: 'mbc-calendar-day-appointments' },
+										overlapGroups.map((group, groupIndex) => {
+											const containerStyle = getAppointmentContainerStyle(group);
+											const overlapCount = group.length;
+											return el(
+												'div',
+												{
+													key: `group-${groupIndex}`,
+													className: 'mbc-calendar-appointment-group',
+													style: containerStyle
+												},
+												group.map((apt, aptIndex) => {
+													const style = getAppointmentStyle(apt, aptIndex, overlapCount);
+													return renderCalendarAppointment(apt, style);
+												})
+											);
+										})
 									)
-								),
-								el('div', { className: 'mbc-calendar-day-appointments' },
-									dayAppointments
-										.sort((a, b) => (a.time || '').localeCompare(b.time || ''))
-										.map(apt => renderCalendarAppointment(apt, getAppointmentStyle(apt)))
-								)
+								) : null
 							);
 						})
 					)
@@ -678,6 +992,7 @@
 		return el(
 			'div',
 			{ className: 'mbc-admin-appointments-list-view' },
+			renderAppointmentModal(),
 			el(
 				'div',
 				{ className: 'mbc-view-toggle' },
@@ -686,16 +1001,18 @@
 						type: 'button',
 						className: `mbc-view-toggle-btn ${viewMode === 'list' ? 'is-active' : ''}`,
 						onClick: () => setViewMode('list'),
+						title: wp.i18n.__('List View', 'mpeti-booking-calendar'),
 					},
-					wp.i18n.__('List View', 'mpeti-booking-calendar')
+					el('span', { className: 'dashicons dashicons-list-view' })
 				),
 				el('button',
 					{
 						type: 'button',
 						className: `mbc-view-toggle-btn ${viewMode === 'calendar' ? 'is-active' : ''}`,
 						onClick: () => setViewMode('calendar'),
+						title: wp.i18n.__('Calendar View', 'mpeti-booking-calendar'),
 					},
-					wp.i18n.__('Calendar View', 'mpeti-booking-calendar')
+					el('span', { className: 'dashicons dashicons-calendar-alt' })
 				)
 			),
 			el(

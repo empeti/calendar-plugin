@@ -32,8 +32,14 @@
 		const [activeSearchFilters, setActiveSearchFilters] = useState({ name: '', email: '', date: '' });
 		const [searchExpanded, setSearchExpanded] = useState(false);
 		const [filtersExpanded, setFiltersExpanded] = useState(false);
-		const [viewMode, setViewMode] = useState('calendar'); // 'list' or 'calendar'
+		const [viewMode, setViewMode] = useState('calendar'); // 'list', 'calendar', or 'day'
 		const [expandedDays, setExpandedDays] = useState({}); // Track which days are expanded on mobile
+		const [selectedDay, setSelectedDay] = useState(() => {
+			// Default to today
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+			return today;
+		});
 		const [currentWeekStart, setCurrentWeekStart] = useState(() => {
 			// Get Monday of current week
 			const today = new Date();
@@ -719,35 +725,38 @@
 			}, group[0]);
 			
 			const [startHour, startMin] = (earliestApt.time || '08:00').split(':').map(Number);
-			const startMinutes = startHour * 60 + startMin;
+			const earliestStartMinutes = startHour * 60 + startMin;
 			
 			// Responsive slot height based on screen size
 			const isMobile = window.innerWidth <= 768;
 			const isSmallMobile = window.innerWidth <= 480;
-			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 70);
+			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 90);
 			const PIXELS_PER_MINUTE = SLOT_HEIGHT / 30;
 			
 			// Calculate position from top of time grid (8:00 AM = 0px)
-			const minutesFrom8AM = startMinutes - (8 * 60);
+			const minutesFrom8AM = earliestStartMinutes - (8 * 60);
 			const top = minutesFrom8AM * PIXELS_PER_MINUTE;
 			
 			return {
-				position: 'absolute',
-				top: `${Math.round(top)}px`,
-				left: '4px',
-				right: '4px',
-				display: 'flex',
-				flexDirection: 'row',
-				gap: group.length > 2 ? '0px' : '4px', // No gap if more than 2 boxes (they'll overlap)
-				alignItems: 'flex-start',
-				width: 'calc(100% - 8px)',
-				maxWidth: 'calc(100% - 8px)',
-				boxSizing: 'border-box',
+				style: {
+					position: 'absolute',
+					top: `${Math.round(top)}px`,
+					left: '4px',
+					right: '4px',
+					display: 'flex',
+					flexDirection: 'row',
+					gap: group.length > 2 ? '0px' : '4px', // No gap if more than 2 boxes (they'll overlap)
+					alignItems: 'flex-start',
+					width: 'calc(100% - 8px)',
+					maxWidth: 'calc(100% - 8px)',
+					boxSizing: 'border-box',
+				},
+				earliestStartMinutes,
 			};
 		}
 		
 		// Calculate individual appointment style (for boxes within a flex container)
-		function getAppointmentStyle(apt, overlapIndex, overlapCount) {
+		function getAppointmentStyle(apt, overlapIndex, overlapCount, earliestStartMinutes) {
 			const [startHour, startMin] = (apt.time || '08:00').split(':').map(Number);
 			const startMinutes = startHour * 60 + startMin;
 			const duration = apt.service_duration || 60;
@@ -757,6 +766,9 @@
 			const isSmallMobile = window.innerWidth <= 480;
 			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 90);
 			const PIXELS_PER_MINUTE = SLOT_HEIGHT / 30;
+			const baseStartMinutes = earliestStartMinutes !== undefined ? earliestStartMinutes : (8 * 60);
+			const offsetMinutes = Math.max(0, startMinutes - baseStartMinutes);
+			const offsetPx = offsetMinutes * PIXELS_PER_MINUTE;
 			
 			// Calculate height in pixels based on duration
 			const heightPx = duration * PIXELS_PER_MINUTE;
@@ -785,6 +797,7 @@
 					marginLeft: marginLeft,
 					minHeight: `${minHeightPx}px`,
 					height: `${Math.max(minHeightPx, Math.round(heightPx))}px`,
+					marginTop: `${Math.round(offsetPx)}px`,
 					boxSizing: 'border-box',
 					zIndex: 10 + overlapIndex, // Stack overlapping boxes
 					position: 'relative',
@@ -798,6 +811,7 @@
 					maxWidth: '150px',
 					minHeight: `${minHeightPx}px`,
 					height: `${Math.max(minHeightPx, Math.round(heightPx))}px`,
+					marginTop: `${Math.round(offsetPx)}px`,
 					boxSizing: 'border-box',
 				};
 			}
@@ -837,6 +851,208 @@
 		}, [currentWeekStart]);
 
 		// Render calendar view
+		// Format date for display
+		function formatDateDisplay(date) {
+			const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+			return date.toLocaleDateString('en-US', options);
+		}
+
+		// Get filtered appointments (used by both list and day views)
+		function getFilteredAppointments() {
+			// First filter by button filters
+			const buttonFiltered = filterAppointmentsByButtons(appointments);
+			// Then filter by search
+			return filterAppointmentsBySearch(buttonFiltered);
+		}
+
+		// Get appointments for a specific date
+		function getAppointmentsForDay(date) {
+			const dateStr = formatDateLocal(date);
+			const filtered = getFilteredAppointments();
+			return filtered.filter(apt => apt.date === dateStr);
+		}
+
+		// Render day view
+		function renderDayView() {
+			if (!selectedDay) {
+				const today = new Date();
+				today.setHours(0, 0, 0, 0);
+				setSelectedDay(today);
+				return el('div', null, 'Loading...');
+			}
+
+			const dayAppointments = getAppointmentsForDay(selectedDay);
+			const timeSlots = generateTimeSlots();
+			
+			// Group appointments by staff member
+			const staffGroups = {};
+			dayAppointments.forEach(apt => {
+				const staffId = apt.staff || 'no-staff';
+				const staffName = apt.staff_name || 'No Staff Assigned';
+				const staffPhoto = apt.staff_photo || 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#e0e0e0"/><circle cx="24" cy="18" r="9" fill="#999"/><path d="M24 30c-6 0-12 3-12 6v3h24v-3c0-3-6-6-12-6z" fill="#999"/></svg>');
+				
+				if (!staffGroups[staffId]) {
+					staffGroups[staffId] = {
+						staffId: staffId,
+						staffName: staffName,
+						staffPhoto: staffPhoto,
+						appointments: []
+					};
+				}
+				staffGroups[staffId].appointments.push(apt);
+			});
+
+			// Sort appointments within each staff group by time
+			Object.keys(staffGroups).forEach(staffId => {
+				staffGroups[staffId].appointments.sort((a, b) => {
+					return (a.time || '').localeCompare(b.time || '');
+				});
+			});
+
+			const staffList = Object.values(staffGroups);
+
+			// Navigation functions
+			function navigateDay(days) {
+				const newDate = new Date(selectedDay);
+				newDate.setDate(newDate.getDate() + days);
+				newDate.setHours(0, 0, 0, 0);
+				setSelectedDay(newDate);
+			}
+
+			return el(
+				'div',
+				{ className: 'mbc-admin-day-view' },
+				el(
+					'div',
+					{ className: 'mbc-day-view-header' },
+					el(
+						'div',
+						{ className: 'mbc-day-nav-group' },
+						el('button',
+							{
+								type: 'button',
+								className: 'mbc-day-nav-button',
+								onClick: () => navigateDay(-1),
+							},
+							'← Previous Day'
+						),
+						el('div', { className: 'mbc-day-date-selector' },
+							el('input', {
+								type: 'date',
+								value: formatDateLocal(selectedDay),
+								onChange: (e) => {
+									const newDate = new Date(e.target.value + 'T00:00:00');
+									newDate.setHours(0, 0, 0, 0);
+									setSelectedDay(newDate);
+								},
+								onClick: (e) => e.target.showPicker(),
+								onFocus: (e) => e.target.showPicker(),
+								className: 'mbc-day-date-input'
+							}),
+							el('h2', { className: 'mbc-day-display' }, formatDateDisplay(selectedDay))
+						),
+						el('button',
+							{
+								type: 'button',
+								className: 'mbc-day-nav-button',
+								onClick: () => navigateDay(1),
+							},
+							'Next Day →'
+						)
+					),
+					el(
+						'div',
+						{ className: 'mbc-calendar-view-toggle' },
+						el('span', { className: 'mbc-view-toggle-label' }, wp.i18n.__('View', 'mpeti-booking-calendar')),
+						el('button',
+							{
+								type: 'button',
+								className: `mbc-view-toggle-btn ${viewMode === 'calendar' ? 'is-active' : ''}`,
+								onClick: () => setViewMode('calendar'),
+								title: wp.i18n.__('Week View', 'mpeti-booking-calendar'),
+							},
+							el('span', { className: 'dashicons dashicons-calendar-alt' })
+						),
+						el('button',
+							{
+								type: 'button',
+								className: `mbc-view-toggle-btn ${viewMode === 'day' ? 'is-active' : ''}`,
+								onClick: () => setViewMode('day'),
+								title: wp.i18n.__('Day View', 'mpeti-booking-calendar'),
+							},
+							el('span', { className: 'dashicons dashicons-calendar' })
+						)
+					)
+				),
+				staffList.length > 0 ? el(
+					'div',
+					{ className: 'mbc-day-view-container' },
+					el(
+						'div',
+						{ className: 'mbc-day-time-column' },
+						el('div', { className: 'mbc-day-time-header' }, ''),
+						timeSlots.map(slot => 
+							el('div', { key: slot, className: 'mbc-day-time-slot' }, 
+								formatTime(slot)
+							)
+						)
+					),
+					el(
+						'div',
+						{ className: 'mbc-day-staff-grid' },
+						staffList.map((staffGroup) => {
+							const staffAppointments = staffGroup.appointments;
+							const overlapGroups = groupOverlappingAppointments(staffAppointments);
+							
+							return el(
+								'div',
+								{ key: staffGroup.staffId, className: 'mbc-day-staff-column' },
+								el(
+									'div',
+									{ className: 'mbc-day-staff-header' },
+									el('img', {
+										className: 'mbc-day-staff-avatar',
+										src: staffGroup.staffPhoto,
+										alt: staffGroup.staffName
+									}),
+									el('div', { className: 'mbc-day-staff-name' }, staffGroup.staffName)
+								),
+								el(
+									'div',
+									{ className: 'mbc-day-staff-time-grid' },
+									timeSlots.map(slot => 
+										el('div', { key: slot, className: 'mbc-day-time-row' })
+									),
+									el('div', { className: 'mbc-day-staff-appointments' },
+										overlapGroups.map((group, groupIndex) => {
+											const { style: containerStyle, earliestStartMinutes } = getAppointmentContainerStyle(group);
+											const overlapCount = group.length;
+											return el(
+												'div',
+												{
+													key: `group-${groupIndex}`,
+													className: 'mbc-calendar-appointment-group',
+													style: containerStyle
+												},
+												group.map((apt, aptIndex) => {
+													const style = getAppointmentStyle(apt, aptIndex, overlapCount, earliestStartMinutes);
+													return renderCalendarAppointment(apt, style);
+												})
+											);
+										})
+									)
+								)
+							);
+						})
+					)
+				) : el(
+					'div',
+					{ className: 'mbc-day-no-appointments' },
+					el('p', null, `No appointments found for ${formatDateDisplay(selectedDay)}`)
+				)
+			);
+		}
+
 		function renderCalendarView() {
 			if (!currentWeekStart) {
 				// Initialize if not set
@@ -859,22 +1075,49 @@
 				el(
 					'div',
 					{ className: 'mbc-calendar-week-header' },
-					el('button',
-						{
-							type: 'button',
-							className: 'mbc-week-nav-button',
-							onClick: () => navigateWeek(-1),
-						},
-						'← Previous Week'
+					el(
+						'div',
+						{ className: 'mbc-week-nav-group' },
+						el('button',
+							{
+								type: 'button',
+								className: 'mbc-week-nav-button',
+								onClick: () => navigateWeek(-1),
+							},
+							'← Previous Week'
+						),
+						el('h2', { className: 'mbc-week-range' }, formatWeekRange(currentWeekStart)),
+						el('button',
+							{
+								type: 'button',
+								className: 'mbc-week-nav-button',
+								onClick: () => navigateWeek(1),
+							},
+							'Next Week →'
+						)
 					),
-					el('h2', { className: 'mbc-week-range' }, formatWeekRange(currentWeekStart)),
-					el('button',
-						{
-							type: 'button',
-							className: 'mbc-week-nav-button',
-							onClick: () => navigateWeek(1),
-						},
-						'Next Week →'
+					el(
+						'div',
+						{ className: 'mbc-calendar-view-toggle' },
+						el('span', { className: 'mbc-view-toggle-label' }, wp.i18n.__('View', 'mpeti-booking-calendar')),
+						el('button',
+							{
+								type: 'button',
+								className: `mbc-view-toggle-btn ${viewMode === 'calendar' ? 'is-active' : ''}`,
+								onClick: () => setViewMode('calendar'),
+								title: wp.i18n.__('Week View', 'mpeti-booking-calendar'),
+							},
+							el('span', { className: 'dashicons dashicons-calendar-alt' })
+						),
+						el('button',
+							{
+								type: 'button',
+								className: `mbc-view-toggle-btn ${viewMode === 'day' ? 'is-active' : ''}`,
+								onClick: () => setViewMode('day'),
+								title: wp.i18n.__('Day View', 'mpeti-booking-calendar'),
+							},
+							el('span', { className: 'dashicons dashicons-calendar' })
+						)
 					)
 				),
 				el(
@@ -962,7 +1205,7 @@
 									),
 									el('div', { className: 'mbc-calendar-day-appointments' },
 										overlapGroups.map((group, groupIndex) => {
-											const containerStyle = getAppointmentContainerStyle(group);
+											const { style: containerStyle, earliestStartMinutes } = getAppointmentContainerStyle(group);
 											const overlapCount = group.length;
 											return el(
 												'div',
@@ -972,7 +1215,7 @@
 													style: containerStyle
 												},
 												group.map((apt, aptIndex) => {
-													const style = getAppointmentStyle(apt, aptIndex, overlapCount);
+													const style = getAppointmentStyle(apt, aptIndex, overlapCount, earliestStartMinutes);
 													return renderCalendarAppointment(apt, style);
 												})
 											);
@@ -1015,7 +1258,7 @@
 						type: 'button',
 						className: `mbc-view-toggle-btn ${viewMode === 'calendar' ? 'is-active' : ''}`,
 						onClick: () => setViewMode('calendar'),
-						title: wp.i18n.__('Calendar View', 'mpeti-booking-calendar'),
+						title: wp.i18n.__('Week View', 'mpeti-booking-calendar'),
 					},
 					el('span', { className: 'dashicons dashicons-calendar-alt' })
 				)
@@ -1161,6 +1404,8 @@
 						)
 					)
 				)
+			) : viewMode === 'day' ? (
+				loading ? el(Spinner, null) : renderDayView()
 			) : (
 				loading ? el(Spinner, null) : renderCalendarView()
 			)

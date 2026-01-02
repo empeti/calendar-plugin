@@ -671,6 +671,20 @@
 	align-items: center;
 }
 
+.mbc-calendar-view-toggle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.mbc-view-toggle-label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #646970;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+}
+
 .mbc-view-toggle-btn {
 	padding: 6px 8px;
 	background: transparent;
@@ -686,6 +700,23 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.mbc-week-nav-group,
+.mbc-day-nav-group {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.mbc-week-nav-group {
+	flex: 1;
+}
+
+.mbc-day-nav-group {
+	flex: 1;
+	justify-content: space-between;
 }
 
 .mbc-view-toggle-btn .dashicons {
@@ -718,12 +749,15 @@
 	overflow-x: auto;
 	overflow-y: visible;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	--mbc-week-header-height: 88px;
 }
 
 .mbc-calendar-week-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
 	margin-bottom: 0;
 	padding: 20px 24px;
 	border-bottom: 2px solid #e8e8e8;
@@ -787,21 +821,23 @@
 }
 
 .mbc-calendar-time-header {
-	height: 60px;
+	height: var(--mbc-week-header-height);
 	border-bottom: 2px solid #e8e8e8;
 	background: linear-gradient(to bottom, #f0f0f0 0%, #e8e8e8 100%);
 }
 
 .mbc-calendar-time-slot {
 	height: 90px; /* Match minimum box height to align properly */
-	border-bottom: 1px solid #f0f0f0;
+	border-top: 1px solid #f0f0f0;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: flex-end;
 	padding-right: 10px;
+	padding-top: 4px;
 	font-size: 11px;
-	font-weight: 500;
+	font-weight: 600;
 	color: #646970;
+	box-sizing: border-box;
 }
 
 .mbc-calendar-week-grid {
@@ -839,13 +875,15 @@
 
 .mbc-calendar-day-header {
 	padding: 14px 12px;
-	background: linear-gradient(to bottom, #fff 0%, #f8f8f8 100%);
-	border-bottom: 2px solid #e8e8e8;
+	background: linear-gradient(135deg, #d9e7ff 0%, #bcd3ff 100%);
+	border-bottom: 2px solid #8fb5f6;
 	border-radius: 6px 6px 0 0;
 	text-align: center;
 	position: relative;
 	display: flex;
 	align-items: center;
+	min-height: var(--mbc-week-header-height);
+	box-sizing: border-box;
 	justify-content: center;
 }
 
@@ -1389,6 +1427,211 @@
 	box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
 
+/* Day View Styles */
+.mbc-admin-day-view {
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	padding: 0;
+	overflow-x: auto;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	--mbc-day-header-height: 111px;
+}
+
+.mbc-day-view-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	padding: 16px 20px;
+	background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
+	border-bottom: 2px solid #e8e8e8;
+	border-radius: 8px 8px 0 0;
+	gap: 16px;
+	min-height: var(--mbc-day-header-height);
+	box-sizing: border-box;
+}
+
+.mbc-day-date-selector {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	flex: 1;
+}
+
+.mbc-day-date-input {
+	padding: 8px 12px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	font-size: 14px;
+	cursor: pointer;
+	background: #fff;
+}
+
+.mbc-day-date-input:hover,
+.mbc-day-date-input:focus {
+	border-color: #2271b1;
+	outline: none;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.mbc-day-display {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.mbc-day-nav-button {
+	padding: 10px 18px;
+	background: #fff;
+	color: #2c3338;
+	border: 1px solid #d0d0d0;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	transition: all 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.mbc-day-nav-button:hover {
+	background: #f5f5f5;
+	border-color: #8c8f94;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+	transform: translateY(-1px);
+}
+
+.mbc-day-view-container {
+	display: flex;
+	gap: 12px;
+	overflow-x: auto;
+	padding: 20px;
+}
+
+.mbc-day-time-column {
+	flex-shrink: 0;
+	width: 80px;
+	display: flex;
+	flex-direction: column;
+}
+
+.mbc-day-time-header {
+	height: var(--mbc-day-header-height);
+	border-bottom: 2px solid #e0e0e0;
+	background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+	border-radius: 4px 0 0 0;
+}
+
+.mbc-day-time-slot {
+	height: 90px;
+	border-bottom: 1px solid #f0f0f0;
+	display: flex;
+	align-items: flex-start;
+	padding-top: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	color: #646970;
+	box-sizing: border-box;
+}
+
+.mbc-day-staff-grid {
+	display: flex;
+	gap: 12px;
+	flex: 1;
+	overflow-x: auto;
+}
+
+.mbc-day-staff-column {
+	flex: 0 0 312px;
+	min-width: 312px;
+	display: flex;
+	flex-direction: column;
+	background: #fafafa;
+	border: 1px solid #e0e0e0;
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.mbc-day-staff-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 16px 12px;
+	min-height: var(--mbc-day-header-height);
+	box-sizing: border-box;
+	background: linear-gradient(135deg, #d9e7ff 0%, #bcd3ff 100%);
+	border-bottom: 2px solid #8fb5f6;
+	gap: 8px;
+}
+
+.mbc-day-staff-avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid #e0e0e0;
+}
+
+.mbc-day-staff-name {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	text-align: center;
+	word-break: break-word;
+}
+
+.mbc-day-staff-time-grid {
+	flex: 1;
+	position: relative;
+	min-height: 2160px; /* 24 time slots * 90px */
+	overflow: visible;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.mbc-day-staff-time-grid::before {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 0;
+	pointer-events: none;
+}
+
+.mbc-day-time-row {
+	height: 90px;
+	border-bottom: 1px solid #f0f0f0;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.mbc-day-staff-appointments {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+}
+
+.mbc-day-staff-appointments .mbc-calendar-appointment-group {
+	pointer-events: all;
+}
+
+.mbc-day-no-appointments {
+	padding: 40px 20px;
+	text-align: center;
+	color: #646970;
+	font-size: 14px;
+}
+
 /* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
 	/* Calendar container adjustments */
@@ -1555,26 +1798,26 @@
 	}
 
 	.mbc-calendar-appointment-time {
-		font-size: 9px;
+		font-size: 12px;
 		margin-bottom: 2px;
 	}
 
 	.mbc-calendar-appointment-customer {
-		font-size: 10px;
+		font-size: 13px;
 		margin-bottom: 1px;
 	}
 
 	.mbc-calendar-appointment-service {
-		font-size: 9px;
+		font-size: 11px;
 		margin-bottom: 1px;
 	}
 
 	.mbc-calendar-appointment-staff {
-		font-size: 9px;
+		font-size: 11px;
 	}
 
 	.mbc-calendar-appointment-status {
-		font-size: 8px;
+		font-size: 10px;
 		padding: 2px 6px;
 		margin-top: 4px;
 	}
@@ -1699,6 +1942,11 @@
 		font-size: 15px;
 	}
 
+	.mbc-appointment-modal-edit {
+		width: auto;
+		min-width: 120px;
+	}
+
 	/* View toggle buttons - adjust for mobile */
 	.mbc-view-toggle {
 		padding: 8px;
@@ -1784,19 +2032,19 @@
 	}
 
 	.mbc-calendar-appointment-time {
-		font-size: 8px;
+		font-size: 11px;
 	}
 
 	.mbc-calendar-appointment-customer {
-		font-size: 9px;
+		font-size: 12px;
 	}
 
 	.mbc-calendar-appointment-service {
-		font-size: 8px;
+		font-size: 10px;
 	}
 
 	.mbc-calendar-appointment-status {
-		font-size: 7px;
+		font-size: 9px;
 		padding: 2px 4px;
 	}
 

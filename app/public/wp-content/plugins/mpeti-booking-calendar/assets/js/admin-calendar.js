@@ -802,13 +802,23 @@
 					zIndex: 10 + overlapIndex, // Stack overlapping boxes
 					position: 'relative',
 				};
-			} else {
-				// Normal flex layout for 2 or fewer boxes (no overlap needed)
+			} else if (overlapCount === 1) {
+				// Single appointment - use full column width
 				return {
-					flex: '0 0 150px', // Fixed width for 2 or fewer boxes
-					width: '150px',
+					flex: '1 1 auto',
 					minWidth: '150px',
-					maxWidth: '150px',
+					width: '100%',
+					minHeight: `${minHeightPx}px`,
+					height: `${Math.max(minHeightPx, Math.round(heightPx))}px`,
+					marginTop: `${Math.round(offsetPx)}px`,
+					boxSizing: 'border-box',
+				};
+			} else {
+				// Two appointments - share width equally
+				return {
+					flex: '1 1 50%',
+					minWidth: '150px',
+					width: '50%',
 					minHeight: `${minHeightPx}px`,
 					height: `${Math.max(minHeightPx, Math.round(heightPx))}px`,
 					marginTop: `${Math.round(offsetPx)}px`,

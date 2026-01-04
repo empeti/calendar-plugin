@@ -278,6 +278,25 @@
 	color: #2271b1;
 }
 
+/* Hide toggle button and make header non-clickable on desktop */
+@media (min-width: 769px) {
+	.mbc-admin-filters-header {
+		cursor: default;
+	}
+	
+	.mbc-admin-filters-header:hover {
+		color: #1d2327;
+	}
+	
+	.mbc-filters-group-toggle {
+		display: none;
+	}
+	
+	.mbc-admin-filters-content {
+		display: block !important;
+	}
+}
+
 .mbc-admin-filters-content {
 	margin-top: 16px;
 	padding-top: 16px;
@@ -712,6 +731,7 @@
 
 .mbc-week-nav-group {
 	flex: 1;
+	justify-content: space-between;
 }
 
 .mbc-day-nav-group {
@@ -1456,7 +1476,7 @@
 	align-items: center;
 	justify-content: space-between;
 	flex-wrap: wrap;
-	padding: 16px 20px;
+		padding: 16px 20px;
 	background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
 	border-bottom: 2px solid #e8e8e8;
 	border-radius: 8px 8px 0 0;

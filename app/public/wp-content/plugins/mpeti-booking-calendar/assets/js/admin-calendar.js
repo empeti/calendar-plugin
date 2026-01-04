@@ -32,7 +32,10 @@
 		const [searchFilters, setSearchFilters] = useState({ name: '', email: '', date: '' });
 		const [activeSearchFilters, setActiveSearchFilters] = useState({ name: '', email: '', date: '' });
 		const [searchExpanded, setSearchExpanded] = useState(false);
-		const [filtersExpanded, setFiltersExpanded] = useState(false);
+		const [filtersExpanded, setFiltersExpanded] = useState(() => {
+			// Always open on desktop (screen width > 768px)
+			return typeof window !== 'undefined' && window.innerWidth > 768;
+		});
 		const [viewMode, setViewMode] = useState('calendar'); // 'list', 'calendar', or 'day'
 		const [expandedDays, setExpandedDays] = useState({}); // Track which days are expanded on mobile
 		const [selectedDay, setSelectedDay] = useState(() => {
@@ -58,6 +61,19 @@
 		useEffect(() => {
 			loadAppointments();
 		}, [filters]);
+
+		// Keep filters expanded on desktop
+		useEffect(() => {
+			function handleResize() {
+				if (window.innerWidth > 768) {
+					setFiltersExpanded(true);
+				}
+			}
+			window.addEventListener('resize', handleResize);
+			// Set initial state
+			handleResize();
+			return () => window.removeEventListener('resize', handleResize);
+		}, []);
 
 		function loadStaffAndServices() {
 			// Load staff
@@ -1413,7 +1429,12 @@
 					{
 						type: 'button',
 						className: 'mbc-admin-filters-header',
-						onClick: () => setFiltersExpanded(!filtersExpanded),
+						onClick: () => {
+							// Only allow toggle on mobile
+							if (isMobileView()) {
+								setFiltersExpanded(!filtersExpanded);
+							}
+						},
 					},
 					el('span', { className: 'mbc-filters-group-title' }, wp.i18n.__('Filters', 'mpeti-booking-calendar')),
 					el('span', { 

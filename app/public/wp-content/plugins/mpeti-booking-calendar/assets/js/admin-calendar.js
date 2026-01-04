@@ -754,7 +754,7 @@
 			// Responsive slot height based on screen size
 			const isMobile = window.innerWidth <= 768;
 			const isSmallMobile = window.innerWidth <= 480;
-			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 90);
+			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 110);
 			const PIXELS_PER_MINUTE = SLOT_HEIGHT / 30;
 			
 			// Calculate position from top of time grid (8:00 AM = 0px)
@@ -788,7 +788,7 @@
 			// Responsive slot height based on screen size
 			const isMobile = window.innerWidth <= 768;
 			const isSmallMobile = window.innerWidth <= 480;
-			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 90);
+			const SLOT_HEIGHT = isSmallMobile ? 75 : (isMobile ? 80 : 110);
 			const PIXELS_PER_MINUTE = SLOT_HEIGHT / 30;
 			const baseStartMinutes = earliestStartMinutes !== undefined ? earliestStartMinutes : (8 * 60);
 			const offsetMinutes = Math.max(0, startMinutes - baseStartMinutes);

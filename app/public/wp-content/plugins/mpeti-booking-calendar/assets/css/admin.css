@@ -847,7 +847,7 @@
 }
 
 .mbc-calendar-time-slot {
-	height: 90px; /* Match minimum box height to align properly */
+	height: 110px; /* Increased to match time row height */
 	border-top: 1px solid #f0f0f0;
 	display: flex;
 	align-items: flex-start;
@@ -969,7 +969,7 @@
 .mbc-calendar-day-time-grid {
 	flex: 0 1 auto;
 	position: relative;
-	min-height: 2160px; /* 24 time slots * 90px */
+	min-height: 2640px; /* 24 time slots * 110px */
 	overflow: visible;
 	margin: 0;
 	padding: 0;
@@ -989,7 +989,7 @@
 }
 
 .mbc-calendar-time-row {
-	height: 90px; /* Match minimum box height to align properly */
+	height: 110px; /* Increased to accommodate appointment details properly */
 	border-bottom: 1px solid #f0f0f0;
 	position: relative;
 	margin: 0;
@@ -1058,7 +1058,7 @@
 	box-sizing: border-box;
 	pointer-events: all;
 	z-index: 10;
-	min-height: 90px; /* Increased to fit all information: time, customer, service, staff, status */
+	min-height: 50px; /* Minimum height for very short appointments, will grow based on duration */
 	min-width: 150px;
 	position: relative;
 	height: 100%;
@@ -1560,7 +1560,7 @@
 }
 
 .mbc-day-time-slot {
-	height: 90px; /* Match minimum box height to align properly */
+	height: 110px; /* Increased to match time row height */
 	border-top: 1px solid #f0f0f0;
 	display: flex;
 	align-items: flex-start;
@@ -1627,7 +1627,7 @@
 .mbc-day-staff-time-grid {
 	flex: 1;
 	position: relative;
-	min-height: 2160px; /* 24 time slots * 90px */
+	min-height: 2640px; /* 24 time slots * 110px */
 	overflow: visible;
 	margin: 0;
 	padding: 0;
@@ -1646,7 +1646,7 @@
 }
 
 .mbc-day-time-row {
-	height: 90px; /* Match minimum box height to align properly */
+	height: 110px; /* Increased to accommodate appointment details properly */
 	border-bottom: 1px solid #f0f0f0;
 	position: relative;
 	margin: 0;

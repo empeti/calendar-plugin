@@ -26,6 +26,7 @@
 		const [selectedAppointment, setSelectedAppointment] = useState(null);
 		const [updatingStatus, setUpdatingStatus] = useState(false);
 		const [staffOptions, setStaffOptions] = useState([]);
+		const [staffList, setStaffList] = useState([]);
 		const [serviceOptions, setServiceOptions] = useState([]);
 		const [expandedStaffGroups, setExpandedStaffGroups] = useState({});
 		const [searchFilters, setSearchFilters] = useState({ name: '', email: '', date: '' });
@@ -64,15 +65,22 @@
 				path: '/mpeti-booking-calendar/v1/staff',
 				headers: { 'X-WP-Nonce': MBCAdmin.nonce },
 			})
-				.then((response) => {
-					if (response && Array.isArray(response)) {
-						const options = [];
-						response.forEach((staff) => {
-							options.push({ label: staff.name, value: String(staff.id) });
+			.then((response) => {
+				if (response && Array.isArray(response)) {
+					const options = [];
+					const fullStaffList = [];
+					response.forEach((staff) => {
+						options.push({ label: staff.name, value: String(staff.id) });
+						fullStaffList.push({
+							id: staff.id,
+							name: staff.name,
+							photo: staff.photo || ''
 						});
-						setStaffOptions(options);
-					}
-				})
+					});
+					setStaffOptions(options);
+					setStaffList(fullStaffList);
+				}
+			})
 				.catch((error) => {
 					console.error('Error loading staff:', error);
 				});
@@ -894,22 +902,44 @@
 			const dayAppointments = getAppointmentsForDay(selectedDay);
 			const timeSlots = generateTimeSlots();
 			
-			// Group appointments by staff member
+			const defaultAvatar = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#e0e0e0"/><circle cx="24" cy="18" r="9" fill="#999"/><path d="M24 30c-6 0-12 3-12 6v3h24v-3c0-3-6-6-12-6z" fill="#999"/></svg>');
+			
+			// First, create staff groups for all staff members
 			const staffGroups = {};
+			staffList.forEach(staff => {
+				const staffId = String(staff.id);
+				staffGroups[staffId] = {
+					staffId: staffId,
+					staffName: staff.name,
+					staffPhoto: staff.photo || defaultAvatar,
+					appointments: []
+				};
+			});
+			
+			// Then, assign appointments to the appropriate staff groups
 			dayAppointments.forEach(apt => {
-				const staffId = apt.staff || 'no-staff';
-				const staffName = apt.staff_name || 'No Staff Assigned';
-				const staffPhoto = apt.staff_photo || 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="#e0e0e0"/><circle cx="24" cy="18" r="9" fill="#999"/><path d="M24 30c-6 0-12 3-12 6v3h24v-3c0-3-6-6-12-6z" fill="#999"/></svg>');
-				
-				if (!staffGroups[staffId]) {
-					staffGroups[staffId] = {
-						staffId: staffId,
-						staffName: staffName,
-						staffPhoto: staffPhoto,
-						appointments: []
-					};
+				const staffId = apt.staff ? String(apt.staff) : 'no-staff';
+				if (staffGroups[staffId]) {
+					// Use appointment staff photo if available (prefer appointment data)
+					if (apt.staff_photo) {
+						staffGroups[staffId].staffPhoto = apt.staff_photo;
+					}
+					if (apt.staff_name) {
+						staffGroups[staffId].staffName = apt.staff_name;
+					}
+					staffGroups[staffId].appointments.push(apt);
+				} else {
+					// Handle appointments without staff (shouldn't happen normally)
+					if (!staffGroups['no-staff']) {
+						staffGroups['no-staff'] = {
+							staffId: 'no-staff',
+							staffName: 'No Staff Assigned',
+							staffPhoto: defaultAvatar,
+							appointments: []
+						};
+					}
+					staffGroups['no-staff'].appointments.push(apt);
 				}
-				staffGroups[staffId].appointments.push(apt);
 			});
 
 			// Sort appointments within each staff group by time
@@ -919,7 +949,7 @@
 				});
 			});
 
-			const staffList = Object.values(staffGroups);
+			const staffGroupsList = Object.values(staffGroups);
 
 			// Navigation functions
 			function navigateDay(days) {
@@ -994,7 +1024,7 @@
 						)
 					)
 				),
-				staffList.length > 0 ? el(
+				staffGroupsList.length > 0 ? el(
 					'div',
 					{ className: 'mbc-day-view-container' },
 					el(
@@ -1010,7 +1040,7 @@
 					el(
 						'div',
 						{ className: 'mbc-day-staff-grid' },
-						staffList.map((staffGroup) => {
+						staffGroupsList.map((staffGroup) => {
 							const staffAppointments = staffGroup.appointments;
 							const overlapGroups = groupOverlappingAppointments(staffAppointments);
 							

@@ -525,9 +525,13 @@ class Rest {
 
 		$data = array();
 		foreach ( $staff as $staff_member ) {
+			$photo_id = \get_post_meta( $staff_member->ID, 'staff_photo', true );
+			$photo_url = $photo_id ? \wp_get_attachment_image_url( $photo_id, 'thumbnail' ) : '';
+			
 			$data[] = array(
-				'id'   => $staff_member->ID,
-				'name' => $staff_member->post_title,
+				'id'    => $staff_member->ID,
+				'name'  => $staff_member->post_title,
+				'photo' => $photo_url,
 			);
 		}
 

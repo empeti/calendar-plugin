@@ -838,9 +838,10 @@
 	font-weight: 600;
 	color: #646970;
 	box-sizing: border-box;
+	background-color: #ffffff;
 }
 
-.mbc-calendar-time-slot:nth-child(2n) {
+.mbc-calendar-time-slot:nth-child(n+2):nth-child(even) {
 	background-color: #f5f5f5;
 }
 
@@ -978,7 +979,7 @@
 	align-items: flex-start;
 }
 
-.mbc-calendar-time-row:nth-child(2n) {
+.mbc-calendar-time-row:nth-child(odd) {
 	background-color: #f5f5f5;
 }
 
@@ -1527,6 +1528,8 @@
 	width: 80px;
 	display: flex;
 	flex-direction: column;
+	background: linear-gradient(to right, #fafafa 0%, #f5f5f5 100%);
+	border-right: 2px solid #e8e8e8;
 }
 
 .mbc-day-time-header {
@@ -1537,18 +1540,21 @@
 }
 
 .mbc-day-time-slot {
-	height: 90px;
-	border-bottom: 1px solid #f0f0f0;
+	height: 90px; /* Match minimum box height to align properly */
+	border-top: 1px solid #f0f0f0;
 	display: flex;
 	align-items: flex-start;
+	justify-content: flex-end;
+	padding-right: 10px;
 	padding-top: 4px;
 	font-size: 11px;
 	font-weight: 600;
 	color: #646970;
 	box-sizing: border-box;
+	background-color: #ffffff;
 }
 
-.mbc-day-time-slot:nth-child(2n) {
+.mbc-day-time-slot:nth-child(n+2):nth-child(even) {
 	background-color: #f5f5f5;
 }
 
@@ -1620,16 +1626,28 @@
 }
 
 .mbc-day-time-row {
-	height: 90px;
+	height: 90px; /* Match minimum box height to align properly */
 	border-bottom: 1px solid #f0f0f0;
 	position: relative;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	display: flex;
+	align-items: flex-start;
 }
 
-.mbc-day-time-row:nth-child(2n) {
+.mbc-day-time-row:nth-child(odd) {
 	background-color: #f5f5f5;
+}
+
+.mbc-day-time-row::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	height: 1px;
+	background: linear-gradient(to right, transparent 0%, #e8e8e8 10%, #e8e8e8 90%, transparent 100%);
 }
 
 .mbc-day-staff-appointments {

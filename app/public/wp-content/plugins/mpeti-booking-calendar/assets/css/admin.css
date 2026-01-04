@@ -766,8 +766,7 @@
 	border: 1px solid #e0e0e0;
 	border-radius: 8px;
 	padding: 0;
-	overflow-x: auto;
-	overflow-y: visible;
+	overflow: hidden;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 	--mbc-week-header-height: 88px;
 }
@@ -830,6 +829,7 @@
 	display: flex;
 	gap: 12px;
 	overflow-x: auto;
+	overflow-y: visible;
 	padding: 20px;
 }
 
@@ -872,7 +872,7 @@
 	flex: 1;
 	width: max-content;
 	min-width: 100%;
-	overflow-x: visible;
+	overflow: visible;
 }
 
 .mbc-calendar-day-column {
@@ -1466,7 +1466,7 @@
 	border: 1px solid #e0e0e0;
 	border-radius: 8px;
 	padding: 0;
-	overflow-x: auto;
+	overflow: hidden;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	--mbc-day-header-height: 111px;
 }
@@ -1540,6 +1540,7 @@
 	display: flex;
 	gap: 12px;
 	overflow-x: auto;
+	overflow-y: visible;
 	padding: 20px;
 }
 
@@ -1582,7 +1583,7 @@
 	display: flex;
 	gap: 12px;
 	flex: 1;
-	overflow-x: auto;
+	overflow: visible;
 }
 
 .mbc-day-staff-column {
@@ -1593,7 +1594,7 @@
 	background: #fafafa;
 	border: 1px solid #e0e0e0;
 	border-radius: 6px;
-	overflow: hidden;
+	overflow: visible;
 }
 
 .mbc-day-staff-header {
@@ -1606,6 +1607,7 @@
 	background: linear-gradient(135deg, #d9e7ff 0%, #bcd3ff 100%);
 	border-bottom: 2px solid #8fb5f6;
 	gap: 8px;
+	position: relative;
 }
 
 .mbc-day-staff-avatar {

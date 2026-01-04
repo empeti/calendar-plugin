@@ -75,6 +75,171 @@
 			return () => window.removeEventListener('resize', handleResize);
 		}, []);
 
+		// Make column headers sticky on scroll
+		useEffect(() => {
+			function handleScroll() {
+				const headers = document.querySelectorAll('.mbc-calendar-day-header, .mbc-day-staff-header');
+				
+				if (headers.length === 0) return;
+				
+				const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+				
+				// Get the height of the WordPress admin bar if it exists
+				const adminBar = document.getElementById('wpadminbar');
+				const adminBarHeight = adminBar ? adminBar.offsetHeight : 0;
+				
+				headers.forEach(header => {
+					const column = header.closest('.mbc-calendar-day-column, .mbc-day-staff-column');
+					if (!column) return;
+					
+					const columnRect = column.getBoundingClientRect();
+					const headerHeight = header.offsetHeight;
+					
+					// Store the original position when first encountered (before it becomes fixed)
+					// This ensures we always have the correct reference point
+					if (!header.dataset.originalTop) {
+						// Get position relative to document by using getBoundingClientRect + scrollTop
+						const headerRect = header.getBoundingClientRect();
+						header.dataset.originalTop = headerRect.top + scrollTop;
+					}
+					
+					const headerOriginalTop = parseFloat(header.dataset.originalTop);
+					
+					// Header should stick when we've scrolled past its original position (accounting for admin bar)
+					// and the column is still visible (hasn't scrolled completely past)
+					const shouldStick = scrollTop >= (headerOriginalTop - adminBarHeight) && columnRect.bottom > (adminBarHeight + headerHeight);
+					
+					if (shouldStick) {
+						// Get the calendar container to check bounds for clipping
+						const calendarContainer = document.querySelector('.mbc-admin-calendar-view, .mbc-admin-day-view');
+						const containerRect = calendarContainer ? calendarContainer.getBoundingClientRect() : null;
+						
+						// Make header sticky just below the admin bar
+						// Use current column position directly - getBoundingClientRect() automatically accounts for container scroll
+						// This ensures the header always stays aligned with its column when scrolling horizontally
+						const leftPos = columnRect.left;
+						
+						// Calculate clip-path to hide only the overflowing parts
+						let clipTop = 0;
+						let clipRight = 0;
+						let clipBottom = 0;
+						let clipLeft = 0;
+						
+						if (containerRect) {
+							// Clip left side if header starts before container
+							if (leftPos < containerRect.left) {
+								clipLeft = containerRect.left - leftPos;
+							}
+							// Clip right side if header extends beyond container
+							if (leftPos + columnRect.width > containerRect.right) {
+								clipRight = (leftPos + columnRect.width) - containerRect.right;
+							}
+						}
+						
+						// Always update the left position, even if already sticky, to handle horizontal scrolling
+						header.style.setProperty('position', 'fixed', 'important');
+						header.style.setProperty('top', adminBarHeight + 'px', 'important');
+						header.style.setProperty('left', leftPos + 'px', 'important');
+						header.style.setProperty('width', columnRect.width + 'px', 'important');
+						header.style.setProperty('z-index', '1000', 'important');
+						header.style.setProperty('margin', '0', 'important');
+						
+						// Apply clip-path to hide only the overflowing parts
+						if (clipLeft > 0 || clipRight > 0 || clipTop > 0 || clipBottom > 0) {
+							header.style.setProperty('clip-path', `inset(${clipTop}px ${clipRight}px ${clipBottom}px ${clipLeft}px)`, 'important');
+						} else {
+							header.style.removeProperty('clip-path');
+						}
+						
+						// Add a placeholder spacer to maintain the layout when header is sticky
+						// This prevents time rows from shifting up
+						if (!header.nextElementSibling || !header.nextElementSibling.classList.contains('mbc-sticky-header-spacer')) {
+							const spacer = document.createElement('div');
+							spacer.className = 'mbc-sticky-header-spacer';
+							spacer.style.height = headerHeight + 'px';
+							spacer.style.width = '100%';
+							spacer.style.flexShrink = '0';
+							header.parentNode.insertBefore(spacer, header.nextSibling);
+						}
+					} else {
+						// Reset to normal position
+						header.style.removeProperty('position');
+						header.style.removeProperty('top');
+						header.style.removeProperty('left');
+						header.style.removeProperty('width');
+						header.style.removeProperty('z-index');
+						header.style.removeProperty('margin');
+						header.style.removeProperty('clip-path');
+						
+						// Remove the placeholder spacer when header is no longer sticky
+						const spacer = header.nextElementSibling;
+						if (spacer && spacer.classList.contains('mbc-sticky-header-spacer')) {
+							spacer.remove();
+						}
+						
+						// Clear the stored position if we're back above it, so it recalculates
+						if (scrollTop < headerOriginalTop - adminBarHeight - 100) {
+							delete header.dataset.originalTop;
+						}
+					}
+				});
+			}
+			
+			// Use requestAnimationFrame for better performance
+			let ticking = false;
+			function onScroll() {
+				if (!ticking) {
+					window.requestAnimationFrame(() => {
+						handleScroll();
+						ticking = false;
+					});
+					ticking = true;
+				}
+			}
+			
+			// Listen to scroll on window
+			window.addEventListener('scroll', onScroll, { passive: true });
+			window.addEventListener('resize', handleScroll);
+			
+			// Clear stored positions when view changes to force recalculation
+			const headers = document.querySelectorAll('.mbc-calendar-day-header, .mbc-day-staff-header');
+			headers.forEach(header => {
+				delete header.dataset.originalTop;
+			});
+			
+			// Find and set up scroll listener on calendar container
+			// The container has overflow-x: auto and is what actually scrolls horizontally
+			let calendarContainer = document.querySelector('.mbc-calendar-week-container, .mbc-day-view-container');
+			if (calendarContainer) {
+				calendarContainer.addEventListener('scroll', onScroll, { passive: true });
+			}
+			
+			// Also try to find it after a delay in case DOM isn't ready yet
+			const timeoutId = setTimeout(() => {
+				if (!calendarContainer) {
+					calendarContainer = document.querySelector('.mbc-calendar-week-container, .mbc-day-view-container');
+					if (calendarContainer) {
+						calendarContainer.addEventListener('scroll', onScroll, { passive: true });
+					}
+				}
+				handleScroll();
+			}, 300);
+			
+			// Also check when view changes
+			handleScroll();
+			
+			return () => {
+				clearTimeout(timeoutId);
+				window.removeEventListener('scroll', onScroll);
+				window.removeEventListener('resize', handleScroll);
+				// Try to find container again for cleanup
+				const containerForCleanup = document.querySelector('.mbc-calendar-week-container, .mbc-day-view-container');
+				if (containerForCleanup) {
+					containerForCleanup.removeEventListener('scroll', onScroll);
+				}
+			};
+		}, [viewMode, appointments, selectedDay, currentWeekStart]);
+
 		function loadStaffAndServices() {
 			// Load staff
 			apiFetch({
@@ -1027,7 +1192,7 @@
 								onClick: () => setViewMode('calendar'),
 								title: wp.i18n.__('Week View', 'mpeti-booking-calendar'),
 							},
-							el('span', { className: 'dashicons dashicons-calendar-alt' })
+							el('span', { className: 'dashicons dashicons-grid-view' })
 						),
 						el('button',
 							{
@@ -1036,7 +1201,7 @@
 								onClick: () => setViewMode('day'),
 								title: wp.i18n.__('Day View', 'mpeti-booking-calendar'),
 							},
-							el('span', { className: 'dashicons dashicons-calendar' })
+							el('span', { className: 'dashicons dashicons-clock' })
 						)
 					)
 				),
@@ -1163,7 +1328,7 @@
 								onClick: () => setViewMode('calendar'),
 								title: wp.i18n.__('Week View', 'mpeti-booking-calendar'),
 							},
-							el('span', { className: 'dashicons dashicons-calendar-alt' })
+							el('span', { className: 'dashicons dashicons-grid-view' })
 						),
 						el('button',
 							{
@@ -1172,7 +1337,7 @@
 								onClick: () => setViewMode('day'),
 								title: wp.i18n.__('Day View', 'mpeti-booking-calendar'),
 							},
-							el('span', { className: 'dashicons dashicons-calendar' })
+							el('span', { className: 'dashicons dashicons-clock' })
 						)
 					)
 				),

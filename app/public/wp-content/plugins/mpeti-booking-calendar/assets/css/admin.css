@@ -428,13 +428,14 @@
 
 .mbc-admin-staff-header {
 	margin: 0;
-	padding: 10px 16px;
-	background: #f8f9fa;
+	padding: 16px 20px;
+	background: linear-gradient(135deg, #d9e7ff 0%, #bcd3ff 100%);
 	border-left: 4px solid #4caf50;
 	font-size: 1.15em;
-	font-weight: 600;
-	color: #333;
-	border-bottom: 1px solid #e0e0e0;
+	font-weight: 700;
+	color: #1d2327;
+	border-bottom: 2px solid #8fb5f6;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .mbc-admin-staff-header-clickable {
@@ -443,11 +444,21 @@
 	transition: background 0.2s;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 12px;
+}
+
+.mbc-staff-group-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	flex-shrink: 0;
 }
 
 .mbc-admin-staff-header-clickable:hover {
-	background: #f0f0f0;
+	background: linear-gradient(135deg, #bcd3ff 0%, #a0c0ff 100%);
 }
 
 .mbc-staff-group-toggle {
@@ -457,6 +468,10 @@
 	transition: transform 0.2s ease, color 0.2s;
 	width: 16px;
 	text-align: center;
+}
+
+.mbc-admin-staff-header .mbc-staff-group-toggle {
+	color: #646970;
 }
 
 .mbc-admin-staff-header-clickable:hover .mbc-staff-group-toggle {
@@ -477,12 +492,13 @@
 
 .mbc-admin-date-header {
 	margin: 0;
-	padding: 8px 16px;
-	background: #fafafa;
+	padding: 12px 20px;
+	background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
 	font-size: 1em;
-	font-weight: 600;
-	color: #555;
-	border-bottom: 1px solid #e0e0e0;
+	font-weight: 700;
+	color: #1d2327;
+	border-bottom: 2px solid #e8e8e8;
+	letter-spacing: -0.2px;
 }
 
 .mbc-admin-appointments-list {
@@ -493,85 +509,121 @@
 	display: flex;
 	gap: 16px;
 	align-items: center;
-	padding: 8px 12px;
-	margin-bottom: 6px;
-	background: #f9f9f9;
-	border: 1px solid #e0e0e0;
-	border-radius: 4px;
-	transition: all 0.2s;
+	padding: 12px 16px;
+	margin-bottom: 8px;
+	background: linear-gradient(to right, #fff 0%, #fafafa 100%);
+	border: 1px solid #d0d0d0;
+	border-left: 4px solid #4caf50;
+	border-radius: 6px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	cursor: pointer;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.mbc-admin-appointment-item.mbc-status-pending {
+	border-left-color: #ffc107;
+}
+
+.mbc-admin-appointment-item.mbc-status-confirmed {
+	border-left-color: #4caf50;
+}
+
+.mbc-admin-appointment-item.mbc-status-cancelled {
+	border-left-color: #f44336;
 }
 
 .mbc-admin-appointment-item:hover {
-	background: #f0f0f0;
-	border-color: #ccc;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+	border-color: #b0b0b0;
+	transform: translateY(-2px);
+	z-index: 20;
+	background: linear-gradient(to right, #fff 0%, #f8f8f8 100%);
 }
 
 .mbc-admin-appointment-item:last-child {
 	margin-bottom: 0;
 }
 
-.mbc-admin-appointment-time-status {
-	flex-shrink: 0;
-	min-width: 140px;
+/* List view appointments now use calendar appointment styles */
+.mbc-admin-appointment-item .mbc-calendar-appointment-content {
 	display: flex;
-	flex-direction: column;
-	gap: 6px;
-	align-items: flex-start;
-}
-
-.mbc-admin-appointment-time {
-	font-size: 0.95em;
-	font-weight: 600;
-	color: #333;
-}
-
-.mbc-admin-appointment-status {
-	display: inline-block;
-}
-
-.mbc-admin-appointment-status span {
-	display: inline-block;
-	padding: 2px 6px;
-	border-radius: 3px;
-	font-size: 0.75em;
-	font-weight: 600;
-	text-transform: capitalize;
-}
-
-.mbc-admin-appointment-details {
-	flex: 1;
-	display: flex;
-	align-items: center;
-}
-
-.mbc-admin-appointment-main {
-	display: flex;
-	align-items: center;
-	gap: 16px;
-	flex-wrap: wrap;
+	flex-direction: row;
 	width: 100%;
 }
 
-.mbc-admin-appointment-customer {
-	font-size: 0.95em;
+.mbc-admin-appointment-item .mbc-calendar-appointment-right {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+	width: 100%;
+}
+
+.mbc-admin-appointment-item .mbc-calendar-appointment-time {
+	font-size: 12px;
 	font-weight: 600;
-	color: #222;
-	padding-right: 8px;
+	color: #646970;
+	margin-bottom: 2px;
+	line-height: 1.2;
 }
 
-.mbc-admin-appointment-service {
-	font-size: 0.85em;
-	color: #666;
-	font-style: italic;
-	padding-right: 8px;
+.mbc-admin-appointment-item .mbc-calendar-appointment-details {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+	min-width: 0;
 }
 
-.mbc-admin-appointment-email,
-.mbc-admin-appointment-phone {
-	font-size: 0.8em;
-	color: #777;
-	padding-right: 8px;
+.mbc-admin-appointment-item .mbc-calendar-appointment-customer {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+	line-height: 1.4;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mbc-admin-appointment-item .mbc-calendar-appointment-service {
+	font-size: 12px;
+	color: #646970;
+	line-height: 1.3;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mbc-admin-appointment-item .mbc-calendar-appointment-staff {
+	font-size: 11px;
+	color: #50575e;
+	margin-top: 2px;
+}
+
+.mbc-admin-appointment-item .mbc-calendar-appointment-staff-name {
+	font-weight: 500;
+}
+
+.mbc-admin-appointment-item .mbc-calendar-appointment-email,
+.mbc-admin-appointment-item .mbc-calendar-appointment-phone {
+	font-size: 11px;
+	color: #646970;
+	margin-top: 2px;
+}
+
+.mbc-admin-appointment-item .mbc-calendar-appointment-status {
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	padding: 3px 8px;
+	border-radius: 3px;
+	align-self: flex-end;
+	margin-top: auto;
+	min-width: 70px;
+	text-align: center;
 }
 
 .mbc-status-pending {

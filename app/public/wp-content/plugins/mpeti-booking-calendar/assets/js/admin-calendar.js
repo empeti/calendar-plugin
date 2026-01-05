@@ -520,6 +520,9 @@
 			// First filter by search term
 			const filteredAppointments = filterAppointmentsBySearch(appointments);
 			
+			// Default avatar SVG if no photo
+			const defaultAvatar = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#e0e0e0"/><circle cx="16" cy="12" r="6" fill="#999"/><path d="M16 20c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="#999"/></svg>');
+			
 			const grouped = {};
 			
 			filteredAppointments.forEach((apt) => {
@@ -540,18 +543,22 @@
 			// Sort staff names alphabetically
 			const sortedStaff = Object.keys(grouped).sort();
 			
-			return sortedStaff.map((staffName) => ({
-				staffName,
-				staffColor: grouped[staffName][Object.keys(grouped[staffName])[0]]?.[0]?.staff_color || '#4caf50',
-				dates: Object.keys(grouped[staffName])
-					.sort()
-					.map((date) => ({
-						date,
-						appointments: grouped[staffName][date].sort((a, b) => 
-							(a.time || '').localeCompare(b.time || '')
-						),
-					})),
-			}));
+			return sortedStaff.map((staffName) => {
+				const firstAppointment = grouped[staffName][Object.keys(grouped[staffName])[0]]?.[0];
+				return {
+					staffName,
+					staffColor: firstAppointment?.staff_color || '#4caf50',
+					staffPhoto: firstAppointment?.staff_photo || defaultAvatar,
+					dates: Object.keys(grouped[staffName])
+						.sort()
+						.map((date) => ({
+							date,
+							appointments: grouped[staffName][date].sort((a, b) => 
+								(a.time || '').localeCompare(b.time || '')
+							),
+						})),
+				};
+			});
 		}
 
 		function confirmAppointment(appointmentId) {
@@ -579,40 +586,30 @@
 		}
 
 		function renderAppointment(apt) {
-			const isPending = (apt.status || 'pending') === 'pending';
+			const duration = apt.service_duration || 60;
+			const endTime = calculateEndTime(apt.time || '08:00', duration);
+			const serviceName = apt.service_name || (apt.service ? 'Service #' + apt.service : 'No Service');
+			
+			const status = apt.status || 'pending';
 			return el(
 				'div',
-				{ key: apt.id, className: 'mbc-admin-appointment-item' },
-				el('div', { className: 'mbc-admin-appointment-time-status' },
-					el('span', { className: 'mbc-admin-appointment-time' }, formatTime(apt.time)),
-					el('span', { className: 'mbc-admin-appointment-status' }, 
-						el('span', { className: `mbc-status-${apt.status}` }, apt.status || 'pending')
-					)
-				),
-				el('div', { className: 'mbc-admin-appointment-details' },
-					el('div', { className: 'mbc-admin-appointment-main' },
-						el('span', { className: 'mbc-admin-appointment-customer' }, apt.customer || 'N/A'),
-						apt.service_name ? el('span', { className: 'mbc-admin-appointment-service' }, apt.service_name) : null,
-						apt.customer_email ? el('span', { className: 'mbc-admin-appointment-email' }, apt.customer_email) : null,
-						apt.customer_phone ? el('span', { className: 'mbc-admin-appointment-phone' }, apt.customer_phone) : null,
-						el('a', 
-							{ 
-								href: `${window.location.origin}/wp-admin/post.php?post=${apt.id}&action=edit`,
-								className: 'mbc-admin-appointment-edit'
-							}, 
-							el('span', { className: 'mbc-edit-icon' }, '✎'),
-							' ',
-							wp.i18n.__('Edit', 'mpeti-booking-calendar')
+				{ 
+					key: apt.id, 
+					className: `mbc-admin-appointment-item mbc-calendar-appointment-item mbc-status-${status}`,
+					onClick: () => setSelectedAppointment(apt)
+				},
+				el('div', { className: 'mbc-calendar-appointment-content' },
+					el('div', { className: 'mbc-calendar-appointment-right' },
+						el('div', { className: 'mbc-calendar-appointment-time' }, 
+							formatTime(apt.time) + ' - ' + formatTime(endTime)
 						),
-						isPending ? el(
-							'button',
-							{
-								type: 'button',
-								className: 'mbc-admin-appointment-confirm',
-								onClick: () => confirmAppointment(apt.id),
-							},
-							wp.i18n.__('Confirm', 'mpeti-booking-calendar')
-						) : null
+						el('div', { className: 'mbc-calendar-appointment-details' },
+							el('div', { className: 'mbc-calendar-appointment-customer' }, apt.customer || 'N/A'),
+							el('div', { className: 'mbc-calendar-appointment-service' }, serviceName),
+							apt.customer_email ? el('div', { className: 'mbc-calendar-appointment-email' }, apt.customer_email) : null,
+							apt.customer_phone ? el('div', { className: 'mbc-calendar-appointment-phone' }, apt.customer_phone) : null
+						),
+						el('div', { className: `mbc-calendar-appointment-status mbc-status-${apt.status}` }, apt.status || 'pending')
 					)
 				)
 			);
@@ -637,7 +634,11 @@
 						onClick: () => toggleStaffGroup(group.staffName),
 					}, 
 					el('span', { className: 'mbc-staff-group-toggle' }, isExpanded ? '▼' : '▶'),
-					' ',
+					el('img', {
+						className: 'mbc-staff-group-avatar',
+						src: group.staffPhoto,
+						alt: group.staffName
+					}),
 					el('span', { className: 'mbc-staff-group-name' }, group.staffName)
 				),
 				isExpanded ? group.dates.map((dateGroup) =>
@@ -1481,7 +1482,16 @@
 						onClick: () => setViewMode('calendar'),
 						title: wp.i18n.__('Week View', 'mpeti-booking-calendar'),
 					},
-					el('span', { className: 'dashicons dashicons-calendar-alt' })
+					el('span', { className: 'dashicons dashicons-grid-view' })
+				),
+				el('button',
+					{
+						type: 'button',
+						className: `mbc-view-toggle-btn ${viewMode === 'day' ? 'is-active' : ''}`,
+						onClick: () => setViewMode('day'),
+						title: wp.i18n.__('Day View', 'mpeti-booking-calendar'),
+					},
+					el('span', { className: 'dashicons dashicons-clock' })
 				)
 			),
 			el(

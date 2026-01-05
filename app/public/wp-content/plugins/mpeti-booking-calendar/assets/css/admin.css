@@ -1137,6 +1137,53 @@
 	background: linear-gradient(to right, #fff 0%, #f8f8f8 100%);
 }
 
+/* Past appointments - grayed out and non-interactive */
+.mbc-appointment-past {
+    cursor: not-allowed !important;
+    pointer-events: none;
+    border-left-color: #999 !important;
+}
+
+.mbc-appointment-past:hover {
+    transform: none !important;
+    box-shadow: inherit !important;
+}
+
+.mbc-appointment-past .mbc-calendar-appointment-customer,
+.mbc-appointment-past .mbc-calendar-appointment-service,
+.mbc-appointment-past .mbc-calendar-appointment-time,
+.mbc-appointment-past .mbc-calendar-appointment-staff {
+    color: #999 !important;
+}
+
+.mbc-appointment-past .mbc-calendar-appointment-status {
+    color: #999 !important;
+    opacity: 0.8;
+}
+
+/* Past appointments in list view */
+.mbc-admin-appointment-item.mbc-appointment-past {
+	cursor: not-allowed !important;
+	pointer-events: none;
+	border-left-color: #999 !important;
+}
+
+.mbc-admin-appointment-item.mbc-appointment-past:hover {
+	transform: none !important;
+	box-shadow: inherit !important;
+}
+
+.mbc-admin-appointment-item.mbc-appointment-past .mbc-calendar-appointment-customer,
+.mbc-admin-appointment-item.mbc-appointment-past .mbc-calendar-appointment-service,
+.mbc-admin-appointment-item.mbc-appointment-past .mbc-calendar-appointment-time {
+	color: #999 !important;
+}
+
+.mbc-admin-appointment-item.mbc-appointment-past .mbc-calendar-appointment-status {
+	color: #999 !important;
+	opacity: 0.8;
+}
+
 .mbc-calendar-appointment-content {
 	display: flex;
 	flex-direction: row;

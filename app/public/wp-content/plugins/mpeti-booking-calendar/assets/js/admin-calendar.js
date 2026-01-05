@@ -60,7 +60,7 @@
 
 		useEffect(() => {
 			loadAppointments();
-		}, [filters]);
+		}, []); // Load appointments only once on mount, filtering is done client-side
 
 		// Keep filters expanded on desktop
 		useEffect(() => {
@@ -287,30 +287,20 @@
 
 		function loadAppointments() {
 			setLoading(true);
-			const params = new URLSearchParams();
-			if (filters.staff && filters.staff.length > 0) {
-				filters.staff.forEach(id => params.append('staff', id));
-			}
-			if (filters.service && filters.service.length > 0) {
-				filters.service.forEach(id => params.append('service', id));
-			}
-			if (filters.status && filters.status.length > 0) {
-				filters.status.forEach(status => params.append('status', status));
-			}
+			// Load all appointments - filtering will be done client-side for better control
+			// This ensures multi-select filters work correctly
 			apiFetch({
-				path: `/mpeti-booking-calendar/v1/appointments?${params.toString()}`,
+				path: `/mpeti-booking-calendar/v1/appointments`,
 				headers: { 'X-WP-Nonce': MBCAdmin.nonce },
 			})
 				.then((response) => {
 					if (response && Array.isArray(response)) {
-						// Filter to only upcoming appointments and sort by date/time
-						const today = new Date();
-						today.setHours(0, 0, 0, 0);
-						
-						const upcoming = response.filter((apt) => {
-							if (!apt.date) return false;
-							const aptDate = new Date(apt.date + 'T00:00:00');
-							return aptDate >= today;
+						// Don't filter by date - show all appointments
+						// The calendar views (weekly/daily) will filter to show only relevant dates
+						// This allows users to navigate to any date and see appointments for that date
+						const filtered = response.filter((apt) => {
+							// Only filter out appointments without a date
+							return apt.date && apt.date.trim();
 						}).sort((a, b) => {
 							// Sort by date first, then time
 							const dateCompare = a.date.localeCompare(b.date);
@@ -318,7 +308,7 @@
 							return (a.time || '').localeCompare(b.time || '');
 						});
 						
-						setAppointments(upcoming);
+						setAppointments(filtered);
 					} else {
 						console.error('Invalid appointments response:', response);
 						setAppointments([]);
@@ -517,8 +507,10 @@
 
 		// Group appointments by staff member, then by date
 		function groupAppointments() {
-			// First filter by search term
-			const filteredAppointments = filterAppointmentsBySearch(appointments);
+			// First filter by button filters (Status, Staff, Service)
+			const buttonFiltered = filterAppointmentsByButtons(appointments);
+			// Then filter by search term
+			const filteredAppointments = filterAppointmentsBySearch(buttonFiltered);
 			
 			// Default avatar SVG if no photo
 			const defaultAvatar = 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#e0e0e0"/><circle cx="16" cy="12" r="6" fill="#999"/><path d="M16 20c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" fill="#999"/></svg>');
@@ -591,12 +583,14 @@
 			const serviceName = apt.service_name || (apt.service ? 'Service #' + apt.service : 'No Service');
 			
 			const status = apt.status || 'pending';
+			const isPast = isAppointmentPast(apt);
+			
 			return el(
 				'div',
 				{ 
 					key: apt.id, 
-					className: `mbc-admin-appointment-item mbc-calendar-appointment-item mbc-status-${status}`,
-					onClick: () => setSelectedAppointment(apt)
+					className: `mbc-admin-appointment-item mbc-calendar-appointment-item mbc-status-${status} ${isPast ? 'mbc-appointment-past' : ''}`,
+					onClick: isPast ? undefined : () => setSelectedAppointment(apt)
 				},
 				el('div', { className: 'mbc-calendar-appointment-content' },
 					el('div', { className: 'mbc-calendar-appointment-right' },
@@ -797,6 +791,22 @@
 			return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
 		}
 
+		// Check if an appointment is in the past
+		function isAppointmentPast(apt) {
+			if (!apt.date || !apt.time) return false;
+			
+			// Normalize date string to handle different formats
+			const aptDateStr = apt.date.trim().replace(/[.\/]/g, '-');
+			const aptTimeStr = apt.time.trim();
+			
+			// Create appointment datetime
+			const appointmentDateTime = new Date(aptDateStr + 'T' + aptTimeStr);
+			const now = new Date();
+			
+			// Check if appointment datetime is in the past
+			return appointmentDateTime < now;
+		}
+
 		// Render appointment for calendar view
 		function renderCalendarAppointment(apt, style) {
 			const isPending = (apt.status || 'pending') === 'pending';
@@ -809,13 +819,15 @@
 			const staffPhoto = apt.staff_photo || defaultAvatar;
 			
 			const status = apt.status || 'pending';
+			const isPast = isAppointmentPast(apt);
+			
 			return el(
 				'div',
 				{ 
 					key: apt.id, 
-					className: `mbc-calendar-appointment-item mbc-status-${status}`,
+					className: `mbc-calendar-appointment-item mbc-status-${status} ${isPast ? 'mbc-appointment-past' : ''}`,
 					style: style,
-					onClick: () => setSelectedAppointment(apt)
+					onClick: isPast ? undefined : () => setSelectedAppointment(apt)
 				},
 				el('div', { className: 'mbc-calendar-appointment-content' },
 					el('div', { className: 'mbc-calendar-appointment-avatar' },

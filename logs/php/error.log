@@ -172,3 +172,6 @@ Stack trace:
 #7 C:\Users\mpeti\Local Sites\calendar-plugin\app\public\index.php(17): require('C:\\Users\\mpeti\\...')
 #8 {main}
   thrown in C:\Users\mpeti\Local Sites\calendar-plugin\app\public\wp-content\plugins\mpeti-booking-calendar\includes\class-mbc-cpt-appointment.php on line 46
+[05-Jan-2026 13:54:38 UTC] Post ID 90 check - Post type: mbc_appointment, Post status: publish
+[05-Jan-2026 13:54:38 UTC] Post ID 90 - appointment_date: 2025-12-29
+[05-Jan-2026 13:54:38 UTC] Post ID 90 found in WP_Query results. Post status: publish

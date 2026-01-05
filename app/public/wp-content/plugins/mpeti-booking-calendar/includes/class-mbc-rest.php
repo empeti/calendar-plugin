@@ -356,7 +356,9 @@ class Rest {
 		$args = array(
 			'post_type'      => 'mbc_appointment',
 			'post_status'    => 'publish',
-			'posts_per_page' => 200,
+			'posts_per_page' => -1, // Get all appointments, no limit
+			'orderby'        => 'date',
+			'order'          => 'DESC',
 			'meta_query'     => array(
 				'relation' => 'AND',
 			),
@@ -430,6 +432,13 @@ class Rest {
 
 		foreach ( $query->posts as $post ) {
 			$post_id = $post->ID;
+			$appointment_date = \get_post_meta( $post_id, 'appointment_date', true );
+			
+			// Skip appointments without a date
+			if ( empty( $appointment_date ) ) {
+				continue;
+			}
+			
 			$staff_id = \get_post_meta( $post_id, 'staff_id', true );
 			$service_id = \get_post_meta( $post_id, 'service_id', true );
 			
@@ -460,7 +469,7 @@ class Rest {
 			
 			$data[] = array(
 				'id'       => $post_id,
-				'date'     => \get_post_meta( $post_id, 'appointment_date', true ),
+				'date'     => $appointment_date,
 				'time'     => \get_post_meta( $post_id, 'appointment_time', true ),
 				'customer' => \get_post_meta( $post_id, 'customer_name', true ),
 				'customer_email' => \get_post_meta( $post_id, 'customer_email', true ),
